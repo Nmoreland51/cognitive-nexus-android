@@ -19,6 +19,8 @@ data class ChatUiState(
     val messages: List<ChatMessage> = emptyList(),
     val draft: String = "",
     val backendUrl: String = "",
+    val backendStatus: String = "Checking backend…",
+    val activeModel: String? = null,
     val isSending: Boolean = false,
     val error: String? = null,
 )
@@ -32,7 +34,12 @@ class ChatViewModel(
     private val sessionId = UUID.randomUUID().toString()
 
     init {
-        viewModelScope.launch { settings.backendUrl.collectLatest { url -> mutableState.update { it.copy(backendUrl = url) } } }
+        viewModelScope.launch {
+            settings.backendUrl.collectLatest { url ->
+                mutableState.update { it.copy(backendUrl = url, backendStatus = "Checking backend…", activeModel = null) }
+                refreshBackendStatus()
+            }
+        }
     }
 
     fun updateDraft(value: String) = mutableState.update { it.copy(draft = value, error = null) }
@@ -45,6 +52,23 @@ class ChatViewModel(
             chatRepository.sendMessage(message, sessionId)
                 .onSuccess { reply -> mutableState.update { it.copy(isSending = false, messages = it.messages + ChatMessage(text = reply, isUser = false)) } }
                 .onFailure { error -> mutableState.update { it.copy(isSending = false, error = error.message ?: "Unable to reach the backend.") } }
+        }
+    }
+
+    fun refreshBackendStatus() {
+        viewModelScope.launch {
+            chatRepository.checkHealth()
+                .onSuccess { health ->
+                    mutableState.update {
+                        it.copy(
+                            backendStatus = if (health.ok) "Connected" else "Unavailable",
+                            activeModel = health.chatModel,
+                        )
+                    }
+                }
+                .onFailure { failure ->
+                    mutableState.update { it.copy(backendStatus = "Backend configuration required", activeModel = null) }
+                }
         }
     }
 
