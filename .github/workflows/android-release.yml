@@ -41,6 +41,7 @@ jobs:
 
   tag-release:
     if: startsWith(github.ref, 'refs/tags/v')
+    needs: build-debug
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
@@ -58,9 +59,6 @@ jobs:
 
       - name: Make gradlew executable
         run: chmod +x gradlew
-
-      - name: Build debug APK (tag validation)
-        run: ./gradlew assembleDebug
 
       - name: Determine signing readiness
         id: signing

@@ -98,7 +98,13 @@ private fun AppRoot(viewModel: AppViewModel) {
         topBar = {
             CenterAlignedTopAppBar(
                 title = {
-                    Text(if (state.showSettings) "Settings" else "Cognitive Nexus Chat")
+                    Text(
+                        if (state.showSettings) {
+                            stringResource(R.string.settings_title)
+                        } else {
+                            stringResource(R.string.chat_title)
+                        }
+                    )
                 },
                 navigationIcon = {
                     if (state.showSettings) {
@@ -201,6 +207,7 @@ private fun ChatScreen(
                 value = input,
                 onValueChange = onInputChange,
                 modifier = Modifier.weight(1f),
+                label = { Text(stringResource(R.string.message_input)) },
                 placeholder = { Text("Type a message") },
                 maxLines = 4,
                 keyboardOptions = KeyboardOptions(imeAction = ImeAction.Send),

@@ -27,4 +27,12 @@ class SettingsRepositoryTest {
             SettingsRepository.normalizeBackendUrl("https://example.com")
         )
     }
+
+    @Test
+    fun normalizeBackendUrl_dropsPathSegmentsToServerRoot() {
+        assertEquals(
+            "https://example.com/",
+            SettingsRepository.normalizeBackendUrl("https://example.com/api/v1")
+        )
+    }
 }

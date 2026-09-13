@@ -29,6 +29,7 @@
 - `app/src/main/java/com/nmoreland/cognitivenexus/MainActivity.kt`
 - `app/src/main/java/com/nmoreland/cognitivenexus/model/ChatMessage.kt`
 - `app/src/main/java/com/nmoreland/cognitivenexus/network/BackendApi.kt`
+- `app/src/main/java/com/nmoreland/cognitivenexus/network/BackendUrlNormalizer.kt`
 - `app/src/main/java/com/nmoreland/cognitivenexus/network/RetrofitFactory.kt`
 - `app/src/main/java/com/nmoreland/cognitivenexus/data/ChatRepository.kt`
 - `app/src/main/java/com/nmoreland/cognitivenexus/settings/SettingsRepository.kt`
@@ -88,6 +89,9 @@
    - **Outcome:** Same plugin resolution failure persisted.
 
 9. `./gradlew test` (re-run after expanded test coverage)  
+   - **Outcome:** Same plugin resolution failure persisted before test execution.
+
+10. `./gradlew test` (re-run after final normalization/accessibility fixes)  
    - **Outcome:** Same plugin resolution failure persisted before test execution.
 
 ## Build outcome

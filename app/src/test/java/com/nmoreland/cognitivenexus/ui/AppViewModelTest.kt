@@ -140,6 +140,19 @@ class AppViewModelTest {
 
         assertTrue(viewModel.uiState.value.healthStatus.contains("Health check failed"))
     }
+
+    @Test
+    fun checkHealth_usesDraftBackendUrl() = runTest {
+        val settings = FakeSettingsDataSource()
+        val chat = FakeChatDataSource(sendResult = Result.success(ChatResponse("ok", "s", "m")))
+        val viewModel = AppViewModel(settings, chat)
+
+        viewModel.updateBackendUrlDraft("https://draft.example.com")
+        viewModel.checkHealth()
+        advanceUntilIdle()
+
+        assertEquals("https://draft.example.com", chat.lastHealthBaseUrl)
+    }
 }
 
 private class FakeSettingsDataSource : SettingsDataSource {
@@ -159,8 +172,13 @@ private class FakeChatDataSource(
 ) : ChatDataSource {
     var sendCalls: Int = 0
         private set
+    var lastHealthBaseUrl: String? = null
+        private set
 
-    override suspend fun checkHealth(baseUrl: String): Result<HealthResponse> = healthResult
+    override suspend fun checkHealth(baseUrl: String): Result<HealthResponse> {
+        lastHealthBaseUrl = baseUrl
+        return healthResult
+    }
 
     override suspend fun sendMessage(
         baseUrl: String,

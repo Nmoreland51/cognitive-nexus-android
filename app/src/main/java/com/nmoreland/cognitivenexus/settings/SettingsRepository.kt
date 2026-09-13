@@ -4,6 +4,7 @@ import android.content.Context
 import androidx.datastore.preferences.core.edit
 import androidx.datastore.preferences.core.stringPreferencesKey
 import androidx.datastore.preferences.preferencesDataStore
+import com.nmoreland.cognitivenexus.network.BackendUrlNormalizer
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 
@@ -29,15 +30,10 @@ class SettingsRepository(private val context: Context) : SettingsDataSource {
     }
 
     companion object {
-        const val DEFAULT_BACKEND_URL = "http://10.0.2.2:8000/"
+        const val DEFAULT_BACKEND_URL = BackendUrlNormalizer.DEFAULT_DEV_BACKEND_URL
 
         internal fun normalizeBackendUrl(url: String): String {
-            var normalized = url.trim().ifEmpty { DEFAULT_BACKEND_URL }
-            normalized = normalized.removeSuffix("/")
-            if (normalized.endsWith("/api")) {
-                normalized = normalized.removeSuffix("/api")
-            }
-            return "$normalized/"
+            return BackendUrlNormalizer.normalize(url, DEFAULT_BACKEND_URL)
         }
     }
 }

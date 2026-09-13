@@ -21,19 +21,9 @@ object RetrofitFactory {
         }
     }.build()
 
-    private fun normalizeBaseUrl(raw: String): String {
-        var normalized = raw.trim()
-        if (normalized.isEmpty()) return "http://10.0.2.2:8000/"
-        normalized = normalized.removeSuffix("/")
-        if (normalized.endsWith("/api")) {
-            normalized = normalized.removeSuffix("/api")
-        }
-        return "$normalized/"
-    }
-
     fun backendApi(baseUrl: String): BackendApi {
         return Retrofit.Builder()
-            .baseUrl(normalizeBaseUrl(baseUrl))
+            .baseUrl(BackendUrlNormalizer.normalize(baseUrl))
             .client(httpClient)
             .addConverterFactory(GsonConverterFactory.create())
             .build()
