@@ -7,6 +7,7 @@ import com.nmoreland.cognitivenexus.settings.SettingsDataSource
 import com.nmoreland.cognitivenexus.settings.SettingsRepository
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -74,6 +75,71 @@ class AppViewModelTest {
         assertFalse(state.isLoading)
         assertTrue(state.errorMessage?.contains("Backend error") == true)
     }
+
+    @Test
+    fun sendMessage_blankInput_doesNotCallRepository() = runTest {
+        val settings = FakeSettingsDataSource()
+        val chat = FakeChatDataSource(sendResult = Result.success(ChatResponse("ok", "s", "m")))
+        val viewModel = AppViewModel(settings, chat)
+
+        viewModel.updateInput("   ")
+        viewModel.sendMessage()
+
+        advanceUntilIdle()
+
+        assertEquals(0, chat.sendCalls)
+        assertTrue(viewModel.uiState.value.messages.isEmpty())
+    }
+
+    @Test
+    fun sendMessage_whileLoading_preventsDuplicateSend() = runTest {
+        val settings = FakeSettingsDataSource()
+        val chat = FakeChatDataSource(
+            sendResult = Result.success(ChatResponse("ok", "s", "m")),
+            sendDelayMs = 1_000
+        )
+        val viewModel = AppViewModel(settings, chat)
+
+        viewModel.updateInput("First")
+        viewModel.sendMessage()
+        viewModel.updateInput("Second")
+        viewModel.sendMessage()
+
+        advanceUntilIdle()
+
+        assertEquals(1, chat.sendCalls)
+        assertEquals(2, viewModel.uiState.value.messages.size)
+    }
+
+    @Test
+    fun checkHealth_success_updatesStatus() = runTest {
+        val settings = FakeSettingsDataSource()
+        val chat = FakeChatDataSource(
+            healthResult = Result.success(HealthResponse(ok = true, chat_model = "llama3.1:8b")),
+            sendResult = Result.success(ChatResponse("ok", "s", "m"))
+        )
+        val viewModel = AppViewModel(settings, chat)
+
+        viewModel.checkHealth()
+        advanceUntilIdle()
+
+        assertTrue(viewModel.uiState.value.healthStatus.contains("Health OK"))
+    }
+
+    @Test
+    fun checkHealth_failure_updatesStatus() = runTest {
+        val settings = FakeSettingsDataSource()
+        val chat = FakeChatDataSource(
+            healthResult = Result.failure(IllegalStateException("offline")),
+            sendResult = Result.success(ChatResponse("ok", "s", "m"))
+        )
+        val viewModel = AppViewModel(settings, chat)
+
+        viewModel.checkHealth()
+        advanceUntilIdle()
+
+        assertTrue(viewModel.uiState.value.healthStatus.contains("Health check failed"))
+    }
 }
 
 private class FakeSettingsDataSource : SettingsDataSource {
@@ -88,8 +154,12 @@ private class FakeSettingsDataSource : SettingsDataSource {
 
 private class FakeChatDataSource(
     private val healthResult: Result<HealthResponse> = Result.success(HealthResponse(ok = true)),
-    private val sendResult: Result<ChatResponse>
+    private val sendResult: Result<ChatResponse>,
+    private val sendDelayMs: Long = 0
 ) : ChatDataSource {
+    var sendCalls: Int = 0
+        private set
+
     override suspend fun checkHealth(baseUrl: String): Result<HealthResponse> = healthResult
 
     override suspend fun sendMessage(
@@ -97,5 +167,11 @@ private class FakeChatDataSource(
         message: String,
         sessionId: String,
         model: String
-    ): Result<ChatResponse> = sendResult
+    ): Result<ChatResponse> {
+        sendCalls += 1
+        if (sendDelayMs > 0) {
+            delay(sendDelayMs)
+        }
+        return sendResult
+    }
 }

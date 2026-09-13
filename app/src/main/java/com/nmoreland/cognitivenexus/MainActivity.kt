@@ -48,6 +48,9 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.semantics.contentDescription
+import androidx.compose.ui.semantics.semantics
 import com.nmoreland.cognitivenexus.model.ChatMessage
 import com.nmoreland.cognitivenexus.model.MessageRole
 import com.nmoreland.cognitivenexus.settings.SettingsRepository
@@ -100,14 +103,17 @@ private fun AppRoot(viewModel: AppViewModel) {
                 navigationIcon = {
                     if (state.showSettings) {
                         IconButton(onClick = viewModel::hideSettings) {
-                            Icon(Icons.Filled.ArrowBack, contentDescription = "Back")
+                            Icon(Icons.Filled.ArrowBack, contentDescription = stringResource(R.string.back))
                         }
                     }
                 },
                 actions = {
                     if (!state.showSettings) {
                         IconButton(onClick = viewModel::showSettings) {
-                            Icon(Icons.Filled.Settings, contentDescription = "Settings")
+                            Icon(
+                                Icons.Filled.Settings,
+                                contentDescription = stringResource(R.string.settings)
+                            )
                         }
                     }
                 }
@@ -200,8 +206,14 @@ private fun ChatScreen(
                 keyboardOptions = KeyboardOptions(imeAction = ImeAction.Send),
                 keyboardActions = KeyboardActions(onSend = { onSend() })
             )
-            Button(onClick = onSend, enabled = input.isNotBlank() && !isLoading) {
-                Text("Send")
+            Button(
+                onClick = onSend,
+                enabled = input.isNotBlank() && !isLoading,
+                modifier = Modifier.semantics {
+                    contentDescription = stringResource(R.string.send_message)
+                }
+            ) {
+                Text(stringResource(R.string.send))
             }
         }
     }
@@ -255,11 +267,11 @@ private fun SettingsScreen(
             Button(
                 onClick = onSave,
                 modifier = Modifier.fillMaxWidth()
-            ) { Text("Save") }
+            ) { Text(stringResource(R.string.save)) }
             Button(
                 onClick = onCheckConnection,
                 modifier = Modifier.fillMaxWidth()
-            ) { Text("Check health") }
+            ) { Text(stringResource(R.string.check_health)) }
         }
         Text(
             text = healthStatus,

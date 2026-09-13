@@ -19,25 +19,25 @@ class SettingsRepository(private val context: Context) : SettingsDataSource {
     private val backendUrlKey = stringPreferencesKey("backend_url")
 
     override val backendUrl: Flow<String> = context.dataStore.data.map { preferences ->
-        normalizeUrl(preferences[backendUrlKey] ?: DEFAULT_BACKEND_URL)
+        normalizeBackendUrl(preferences[backendUrlKey] ?: DEFAULT_BACKEND_URL)
     }
 
     override suspend fun saveBackendUrl(url: String) {
         context.dataStore.edit { preferences ->
-            preferences[backendUrlKey] = normalizeUrl(url)
+            preferences[backendUrlKey] = normalizeBackendUrl(url)
         }
-    }
-
-    private fun normalizeUrl(url: String): String {
-        var normalized = url.trim().ifEmpty { DEFAULT_BACKEND_URL }
-        normalized = normalized.removeSuffix("/")
-        if (normalized.endsWith("/api")) {
-            normalized = normalized.removeSuffix("/api")
-        }
-        return "$normalized/"
     }
 
     companion object {
         const val DEFAULT_BACKEND_URL = "http://10.0.2.2:8000/"
+
+        internal fun normalizeBackendUrl(url: String): String {
+            var normalized = url.trim().ifEmpty { DEFAULT_BACKEND_URL }
+            normalized = normalized.removeSuffix("/")
+            if (normalized.endsWith("/api")) {
+                normalized = normalized.removeSuffix("/api")
+            }
+            return "$normalized/"
+        }
     }
 }

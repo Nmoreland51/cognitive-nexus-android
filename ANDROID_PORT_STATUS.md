@@ -36,6 +36,10 @@
 - `app/src/main/java/com/nmoreland/cognitivenexus/ui/theme/Theme.kt`
 - `app/src/main/java/com/nmoreland/cognitivenexus/ui/theme/Type.kt`
 
+### Tests added
+- `app/src/test/java/com/nmoreland/cognitivenexus/ui/AppViewModelTest.kt`
+- `app/src/test/java/com/nmoreland/cognitivenexus/settings/SettingsRepositoryTest.kt`
+
 ### Workflow/docs created or updated
 - `.github/workflows/android-release.yml`
 - `README.md` (updated)
@@ -82,6 +86,9 @@
 
 8. `./gradlew tasks` (re-run after final review fixes)  
    - **Outcome:** Same plugin resolution failure persisted.
+
+9. `./gradlew test` (re-run after expanded test coverage)  
+   - **Outcome:** Same plugin resolution failure persisted before test execution.
 
 ## Build outcome
 
