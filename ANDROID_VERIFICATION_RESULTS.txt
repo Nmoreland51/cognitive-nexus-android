@@ -1,0 +1,141 @@
+ANDROID VERIFICATION RESULTS
+
+1) Every created/modified file
+
+Created
+- /home/runner/work/cognitive-nexus-android/cognitive-nexus-android/.github/workflows/android-release.yml
+- /home/runner/work/cognitive-nexus-android/cognitive-nexus-android/.gitignore
+- /home/runner/work/cognitive-nexus-android/cognitive-nexus-android/ANDROID_PORT_STATUS.md
+- /home/runner/work/cognitive-nexus-android/cognitive-nexus-android/build.gradle.kts
+- /home/runner/work/cognitive-nexus-android/cognitive-nexus-android/gradle.properties
+- /home/runner/work/cognitive-nexus-android/cognitive-nexus-android/gradle/wrapper/gradle-wrapper.jar
+- /home/runner/work/cognitive-nexus-android/cognitive-nexus-android/gradle/wrapper/gradle-wrapper.properties
+- /home/runner/work/cognitive-nexus-android/cognitive-nexus-android/gradlew
+- /home/runner/work/cognitive-nexus-android/cognitive-nexus-android/gradlew.bat
+- /home/runner/work/cognitive-nexus-android/cognitive-nexus-android/settings.gradle.kts
+- /home/runner/work/cognitive-nexus-android/cognitive-nexus-android/app/build.gradle.kts
+- /home/runner/work/cognitive-nexus-android/cognitive-nexus-android/app/proguard-rules.pro
+- /home/runner/work/cognitive-nexus-android/cognitive-nexus-android/app/src/debug/AndroidManifest.xml
+- /home/runner/work/cognitive-nexus-android/cognitive-nexus-android/app/src/debug/res/xml/network_security_config.xml
+- /home/runner/work/cognitive-nexus-android/cognitive-nexus-android/app/src/main/AndroidManifest.xml
+- /home/runner/work/cognitive-nexus-android/cognitive-nexus-android/app/src/main/java/com/nmoreland/cognitivenexus/MainActivity.kt
+- /home/runner/work/cognitive-nexus-android/cognitive-nexus-android/app/src/main/java/com/nmoreland/cognitivenexus/data/ChatRepository.kt
+- /home/runner/work/cognitive-nexus-android/cognitive-nexus-android/app/src/main/java/com/nmoreland/cognitivenexus/model/ChatMessage.kt
+- /home/runner/work/cognitive-nexus-android/cognitive-nexus-android/app/src/main/java/com/nmoreland/cognitivenexus/network/BackendApi.kt
+- /home/runner/work/cognitive-nexus-android/cognitive-nexus-android/app/src/main/java/com/nmoreland/cognitivenexus/network/BackendUrlNormalizer.kt
+- /home/runner/work/cognitive-nexus-android/cognitive-nexus-android/app/src/main/java/com/nmoreland/cognitivenexus/network/RetrofitFactory.kt
+- /home/runner/work/cognitive-nexus-android/cognitive-nexus-android/app/src/main/java/com/nmoreland/cognitivenexus/settings/SettingsRepository.kt
+- /home/runner/work/cognitive-nexus-android/cognitive-nexus-android/app/src/main/java/com/nmoreland/cognitivenexus/ui/AppViewModel.kt
+- /home/runner/work/cognitive-nexus-android/cognitive-nexus-android/app/src/main/java/com/nmoreland/cognitivenexus/ui/theme/Theme.kt
+- /home/runner/work/cognitive-nexus-android/cognitive-nexus-android/app/src/main/java/com/nmoreland/cognitivenexus/ui/theme/Type.kt
+- /home/runner/work/cognitive-nexus-android/cognitive-nexus-android/app/src/main/res/values/strings.xml
+- /home/runner/work/cognitive-nexus-android/cognitive-nexus-android/app/src/main/res/values/themes.xml
+- /home/runner/work/cognitive-nexus-android/cognitive-nexus-android/app/src/main/res/xml/backup_rules.xml
+- /home/runner/work/cognitive-nexus-android/cognitive-nexus-android/app/src/main/res/xml/data_extraction_rules.xml
+- /home/runner/work/cognitive-nexus-android/cognitive-nexus-android/app/src/test/java/com/nmoreland/cognitivenexus/settings/SettingsRepositoryTest.kt
+- /home/runner/work/cognitive-nexus-android/cognitive-nexus-android/app/src/test/java/com/nmoreland/cognitivenexus/ui/AppViewModelTest.kt
+
+Modified
+- /home/runner/work/cognitive-nexus-android/cognitive-nexus-android/README.md
+
+2) Root-level project tree through app/src/main level
+/home/runner/work/cognitive-nexus-android/cognitive-nexus-android
+├── .github/
+│   └── workflows/
+│       └── android-release.yml
+├── .gitignore
+├── ANDROID_PORT_STATUS.md
+├── README.md
+├── app/
+│   ├── build.gradle.kts
+│   ├── proguard-rules.pro
+│   └── src/
+│       ├── debug/
+│       ├── main/
+│       │   ├── AndroidManifest.xml
+│       │   ├── java/
+│       │   │   └── com/nmoreland/cognitivenexus/
+│       │   └── res/
+│       │       ├── values/
+│       │       └── xml/
+│       └── test/
+├── backend-reference/
+│   └── API_CONTRACT_DISCOVERY.md
+├── build.gradle.kts
+├── gradle.properties
+├── gradle/
+│   └── wrapper/
+│       ├── gradle-wrapper.jar
+│       └── gradle-wrapper.properties
+├── gradlew
+├── gradlew.bat
+└── settings.gradle.kts
+
+3) Exact Gradle values
+From /home/runner/work/cognitive-nexus-android/cognitive-nexus-android/app/build.gradle.kts:
+- applicationId = "com.nmoreland.cognitivenexus"
+- minSdk = 26
+- versionCode = 1
+- versionName = "1.0.0"
+- Kotlin/Compose config:
+  - plugins: com.android.application, org.jetbrains.kotlin.android, org.jetbrains.kotlin.plugin.compose
+  - buildFeatures { compose = true }
+  - Compose BOM + Material3 dependency present
+  - kotlinOptions { jvmTarget = "17" }
+
+4) Exact path of native Compose Chat screen and MainActivity
+- /home/runner/work/cognitive-nexus-android/cognitive-nexus-android/app/src/main/java/com/nmoreland/cognitivenexus/MainActivity.kt
+  - class MainActivity
+  - private fun ChatScreen(...)
+
+5) Exact default backend URL and DataStore configuration
+- Default backend URL: http://10.0.2.2:8000/
+  - /home/runner/work/cognitive-nexus-android/cognitive-nexus-android/app/src/main/java/com/nmoreland/cognitivenexus/network/BackendUrlNormalizer.kt
+- DataStore declaration:
+  - preferencesDataStore(name = "user_settings")
+  - /home/runner/work/cognitive-nexus-android/cognitive-nexus-android/app/src/main/java/com/nmoreland/cognitivenexus/settings/SettingsRepository.kt
+- DataStore backup path referenced:
+  - datastore/user_settings.preferences_pb
+  - /home/runner/work/cognitive-nexus-android/cognitive-nexus-android/app/src/main/res/xml/backup_rules.xml
+  - /home/runner/work/cognitive-nexus-android/cognitive-nexus-android/app/src/main/res/xml/data_extraction_rules.xml
+
+6) GitHub Actions workflow path + trigger summary
+- /home/runner/work/cognitive-nexus-android/cognitive-nexus-android/.github/workflows/android-release.yml
+- Triggers:
+  - push to main
+  - push tags matching v*
+- Jobs:
+  - build-debug: builds debug APK and uploads artifact
+  - tag-release: on v* tags, conditionally signs/builds release APK+AAB and creates release assets if secrets exist
+
+7) Did ./gradlew tasks run? exact result
+- Yes
+- Result: FAILED
+- First error:
+  Plugin [id: 'com.android.application', version: '8.5.2', apply: false] was not found ...
+  at build.gradle.kts line 1
+
+8) Did ./gradlew assembleDebug run? exact result
+- Yes
+- Result: FAILED
+- First error:
+  Plugin [id: 'com.android.application', version: '8.5.2', apply: false] was not found ...
+  at build.gradle.kts line 1
+
+9) APK output path and size (if built)
+- Not built, so no APK output file and no size.
+
+10) If APK did not build
+- First exact error shown above.
+- Do not claim app is downloadable.
+
+11) APK committed/artifact/release status
+- Committed APK/AAB in git: No
+- Uploaded as GitHub Actions artifact: No verified upload for Android release workflow yet
+- Attached to GitHub Release: No
+
+12) ANDROID_PORT_STATUS.md summary
+- Lists created files and structure
+- Logs all Gradle command attempts and failures
+- States no debug APK generated locally in this environment
+- Documents workflow behavior, required signing secrets, and current release-APK availability status
