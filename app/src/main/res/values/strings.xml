@@ -1,0 +1,5 @@
+<resources>
+    <string name="app_name">Cognitive Nexus</string>
+    <string name="chat_title">Cognitive Nexus Chat</string>
+    <string name="settings_title">Settings</string>
+</resources>
