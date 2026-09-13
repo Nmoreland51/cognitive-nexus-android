@@ -41,7 +41,14 @@ Attempted commands (Windows equivalents of the requested Gradle commands):
 2. `./gradlew :app:assembleDebug` attempted as `./gradlew.bat :app:assembleDebug`.
    - Result: failed for the same environment prerequisite. First exact error: `'java' is not recognized as an internal or external command, operable program or batch file.`
 
-No APK was built, so there is no verified APK output path.
+GitHub Actions validation on Ubuntu with Java 17:
+
+1. Run `34782350357` attempted `./gradlew :app:assembleDebug` and failed at Kotlin compilation. First exact error: `Unresolved reference 'weight'` in `CognitiveNexusApp.kt`.
+2. Run `34782569868` attempted the same command and failed at Kotlin compilation. First exact error: `Cannot access 'val RowColumnParentData?.weight: Float': it is internal in file.`
+3. Run `34782813824` successfully completed `./gradlew :app:assembleDebug` after the two targeted Compose layout fixes.
+
+Verified APK output path: `app/build/outputs/apk/debug/app-debug.apk`.
+The successful workflow uploaded it as the non-expired `cognitive-nexus-debug-apk` artifact (17,518,690 bytes).
 
 ## Release workflow
 
@@ -54,11 +61,11 @@ Signed tag releases require these GitHub Actions secrets:
 - `ANDROID_KEY_ALIAS`
 - `ANDROID_KEY_PASSWORD`
 
-Verified on 2026-09-13: the repository currently has no GitHub Releases. No downloadable APK has been created by this change.
+Verified on 2026-09-13: the repository currently has no GitHub Releases. A downloadable debug APK workflow artifact exists, but no GitHub Release APK has been created.
 
 ## Next steps
 
-1. Install JDK 17 and ensure `java` is on `PATH`, then run `./gradlew tasks` and `./gradlew :app:assembleDebug`.
-2. Review and commit the working-tree diff, then push the reviewed change to `main` to receive the debug APK workflow artifact.
-3. Configure signing secrets before pushing a `v*` tag if a signed GitHub Release is desired.
+1. Install JDK 17 and ensure `java` is on `PATH` to repeat local validation, if desired.
+2. Configure signing secrets before pushing a `v*` tag if a signed GitHub Release is desired.
+3. Push a `v1.0.0` tag only when ready to create the first release.
 4. Run the backend on a reachable address and configure the app with an emulator or HTTPS/LAN backend URL.
