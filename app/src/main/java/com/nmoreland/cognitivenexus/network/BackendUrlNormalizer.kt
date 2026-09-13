@@ -17,7 +17,7 @@ object BackendUrlNormalizer {
 
             var path = (uri.rawPath ?: "").trim()
             path = path.removeSuffix("/")
-            if (path.endsWith("/api")) {
+            if (path == "/api") {
                 path = path.removeSuffix("/api")
             }
             if (path.isNotEmpty() && !path.startsWith("/")) {

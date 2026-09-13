@@ -261,12 +261,13 @@ private fun SettingsScreen(
             .padding(16.dp),
         verticalArrangement = Arrangement.spacedBy(12.dp)
     ) {
-        Text("Backend URL", fontWeight = FontWeight.SemiBold)
+        Text(stringResource(R.string.backend_url), fontWeight = FontWeight.SemiBold)
         OutlinedTextField(
             value = backendUrl,
             onValueChange = onBackendUrlChange,
             modifier = Modifier.fillMaxWidth(),
             singleLine = true,
+            label = { Text(stringResource(R.string.backend_url)) },
             placeholder = { Text("http://10.0.2.2:8000/") }
         )
         Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {

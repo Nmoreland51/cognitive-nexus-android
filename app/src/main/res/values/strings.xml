@@ -7,6 +7,7 @@
     <string name="send">Send</string>
     <string name="send_message">Send message</string>
     <string name="message_input">Message</string>
+    <string name="backend_url">Backend URL</string>
     <string name="save">Save</string>
     <string name="check_health">Check health</string>
 </resources>

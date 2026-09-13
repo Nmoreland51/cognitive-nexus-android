@@ -35,4 +35,12 @@ class SettingsRepositoryTest {
             SettingsRepository.normalizeBackendUrl("https://example.com/cognitive-nexus")
         )
     }
+
+    @Test
+    fun normalizeBackendUrl_doesNotTrimMyApiSubpath() {
+        assertEquals(
+            "https://example.com/my-api/",
+            SettingsRepository.normalizeBackendUrl("https://example.com/my-api")
+        )
+    }
 }
