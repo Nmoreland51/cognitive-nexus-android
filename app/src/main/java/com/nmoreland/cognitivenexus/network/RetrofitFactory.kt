@@ -1,5 +1,6 @@
 package com.nmoreland.cognitivenexus.network
 
+import com.nmoreland.cognitivenexus.BuildConfig
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.Retrofit
@@ -11,12 +12,14 @@ object RetrofitFactory {
         level = HttpLoggingInterceptor.Level.BASIC
     }
 
-    private val httpClient = OkHttpClient.Builder()
-        .connectTimeout(10, TimeUnit.SECONDS)
-        .readTimeout(30, TimeUnit.SECONDS)
-        .writeTimeout(30, TimeUnit.SECONDS)
-        .addInterceptor(logger)
-        .build()
+    private val httpClient = OkHttpClient.Builder().apply {
+        connectTimeout(10, TimeUnit.SECONDS)
+        readTimeout(30, TimeUnit.SECONDS)
+        writeTimeout(30, TimeUnit.SECONDS)
+        if (BuildConfig.DEBUG) {
+            addInterceptor(logger)
+        }
+    }.build()
 
     private fun normalizeBaseUrl(raw: String): String {
         var normalized = raw.trim()

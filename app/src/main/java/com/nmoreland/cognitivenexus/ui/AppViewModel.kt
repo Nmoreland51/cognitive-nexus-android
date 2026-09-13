@@ -61,7 +61,12 @@ class AppViewModel(
     fun saveBackendUrl() {
         viewModelScope.launch {
             settingsRepository.saveBackendUrl(_uiState.value.backendUrlDraft)
-            _uiState.update { it.copy(successMessage = "Backend URL saved.") }
+            _uiState.update {
+                it.copy(
+                    successMessage = "Backend URL saved.",
+                    healthStatus = "Health check not run yet."
+                )
+            }
         }
     }
 

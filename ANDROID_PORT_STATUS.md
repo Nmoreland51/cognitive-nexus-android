@@ -80,6 +80,9 @@
 7. `./gradlew test` (attempt after adding ViewModel tests)  
    - **Outcome:** Could not start due to the same Android plugin resolution failure at configuration stage.
 
+8. `./gradlew tasks` (re-run after final review fixes)  
+   - **Outcome:** Same plugin resolution failure persisted.
+
 ## Build outcome
 
 - Debug build did **not** complete in this environment because Android Gradle Plugin dependency resolution failed before task execution.

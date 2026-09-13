@@ -19,7 +19,7 @@ class SettingsRepository(private val context: Context) : SettingsDataSource {
     private val backendUrlKey = stringPreferencesKey("backend_url")
 
     override val backendUrl: Flow<String> = context.dataStore.data.map { preferences ->
-        preferences[backendUrlKey] ?: DEFAULT_BACKEND_URL
+        normalizeUrl(preferences[backendUrlKey] ?: DEFAULT_BACKEND_URL)
     }
 
     override suspend fun saveBackendUrl(url: String) {

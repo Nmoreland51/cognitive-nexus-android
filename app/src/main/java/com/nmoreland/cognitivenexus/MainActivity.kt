@@ -251,9 +251,15 @@ private fun SettingsScreen(
             singleLine = true,
             placeholder = { Text("http://10.0.2.2:8000/") }
         )
-        Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-            Button(onClick = onSave) { Text("Save") }
-            Button(onClick = onCheckConnection) { Text("Check health") }
+        Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
+            Button(
+                onClick = onSave,
+                modifier = Modifier.fillMaxWidth()
+            ) { Text("Save") }
+            Button(
+                onClick = onCheckConnection,
+                modifier = Modifier.fillMaxWidth()
+            ) { Text("Check health") }
         }
         Text(
             text = healthStatus,
