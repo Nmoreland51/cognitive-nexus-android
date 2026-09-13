@@ -207,7 +207,7 @@ private fun ChatScreen(
                 onValueChange = onInputChange,
                 modifier = Modifier.weight(1f),
                 label = { Text(stringResource(R.string.message_input)) },
-                placeholder = { Text("Type a message") },
+                placeholder = { Text(stringResource(R.string.type_message)) },
                 maxLines = 4,
                 keyboardOptions = KeyboardOptions(imeAction = ImeAction.Send),
                 keyboardActions = KeyboardActions(onSend = {
@@ -291,7 +291,7 @@ private fun SettingsScreen(
         )
         Spacer(modifier = Modifier.height(8.dp))
         Text(
-            text = "For emulator use 10.0.2.2. Release builds should use HTTPS backends; cleartext HTTP is intended for debug/testing only.",
+            text = stringResource(R.string.backend_network_note),
             style = MaterialTheme.typography.bodySmall,
             color = MaterialTheme.colorScheme.onSurfaceVariant
         )

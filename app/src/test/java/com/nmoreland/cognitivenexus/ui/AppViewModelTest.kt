@@ -171,6 +171,21 @@ class AppViewModelTest {
         assertEquals("Backend URL saved.", viewModel.uiState.value.successMessage)
         assertEquals("Health check not run yet.", viewModel.uiState.value.healthStatus)
     }
+
+    @Test
+    fun checkHealth_onlyLatestResultIsApplied() = runTest {
+        val settings = FakeSettingsDataSource()
+        val chat = SequencedHealthChatDataSource()
+        val viewModel = AppViewModel(settings, chat)
+
+        viewModel.updateBackendUrlDraft("https://first.example.com")
+        viewModel.checkHealth()
+        viewModel.updateBackendUrlDraft("https://second.example.com")
+        viewModel.checkHealth()
+        advanceUntilIdle()
+
+        assertTrue(viewModel.uiState.value.healthStatus.contains("Health OK"))
+    }
 }
 
 private class FakeSettingsDataSource : SettingsDataSource {
@@ -213,4 +228,25 @@ private class FakeChatDataSource(
         }
         return sendResult
     }
+}
+
+private class SequencedHealthChatDataSource : ChatDataSource {
+    private var index = 0
+
+    override suspend fun checkHealth(baseUrl: String): Result<HealthResponse> {
+        index += 1
+        return if (index == 1) {
+            delay(1_000)
+            Result.failure(IllegalStateException("stale failure"))
+        } else {
+            Result.success(HealthResponse(ok = true, chat_model = "llama3.1:8b"))
+        }
+    }
+
+    override suspend fun sendMessage(
+        baseUrl: String,
+        message: String,
+        sessionId: String,
+        model: String
+    ): Result<ChatResponse> = Result.success(ChatResponse("ok", "s", "m"))
 }

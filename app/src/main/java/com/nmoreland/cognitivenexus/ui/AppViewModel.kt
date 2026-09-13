@@ -3,6 +3,7 @@ package com.nmoreland.cognitivenexus.ui
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
+import com.nmoreland.cognitivenexus.BuildConfig
 import com.nmoreland.cognitivenexus.data.ChatDataSource
 import com.nmoreland.cognitivenexus.data.ChatRepository
 import com.nmoreland.cognitivenexus.model.ChatMessage
@@ -60,10 +61,17 @@ class AppViewModel(
     }
 
     fun saveBackendUrl() {
+        if (!BuildConfig.DEBUG && isInsecureHttp(_uiState.value.backendUrlDraft)) {
+            _uiState.update {
+                it.copy(errorMessage = "Release builds require an HTTPS backend URL.")
+            }
+            return
+        }
         viewModelScope.launch {
             runCatching {
                 settingsRepository.saveBackendUrl(_uiState.value.backendUrlDraft)
             }.onSuccess {
+                latestHealthRequestId++
                 _uiState.update {
                     it.copy(
                         successMessage = "Backend URL saved.",
@@ -81,6 +89,10 @@ class AppViewModel(
     fun sendMessage() {
         val input = _uiState.value.currentInput.trim()
         if (input.isEmpty() || _uiState.value.isLoading) return
+        if (!BuildConfig.DEBUG && isInsecureHttp(_uiState.value.savedBackendUrl)) {
+            _uiState.update { it.copy(errorMessage = "Release builds require an HTTPS backend URL.") }
+            return
+        }
 
         val userMessage = ChatMessage(MessageRole.USER, input)
         _uiState.update {
@@ -121,6 +133,10 @@ class AppViewModel(
     }
 
     fun checkHealth() {
+        if (!BuildConfig.DEBUG && isInsecureHttp(_uiState.value.backendUrlDraft)) {
+            _uiState.update { it.copy(healthStatus = "Health check blocked: release builds require HTTPS backend URL.") }
+            return
+        }
         val requestId = ++latestHealthRequestId
         viewModelScope.launch {
             _uiState.update { it.copy(healthStatus = "Checking backend…") }
@@ -157,6 +173,10 @@ class AppViewModel(
 
     fun hideSettings() {
         _uiState.update { it.copy(showSettings = false) }
+    }
+
+    private fun isInsecureHttp(url: String): Boolean {
+        return url.trim().startsWith("http://", ignoreCase = true)
     }
 }
 
