@@ -19,7 +19,8 @@ data class AppUiState(
     val isLoading: Boolean = false,
     val errorMessage: String? = null,
     val showSettings: Boolean = false,
-    val backendUrl: String = SettingsRepository.DEFAULT_BACKEND_URL,
+    val savedBackendUrl: String = SettingsRepository.DEFAULT_BACKEND_URL,
+    val backendUrlDraft: String = SettingsRepository.DEFAULT_BACKEND_URL,
     val healthStatus: String = "Health check not run yet.",
     val setupNotice: String = "Setup note: /api/models is not yet guaranteed by backend contract. This app uses a fixed model hint and surfaces backend setup issues explicitly."
 )
@@ -35,7 +36,13 @@ class AppViewModel(
     init {
         viewModelScope.launch {
             settingsRepository.backendUrl.collect { savedUrl ->
-                _uiState.update { it.copy(backendUrl = savedUrl) }
+                _uiState.update { state ->
+                    val shouldSyncDraft = state.backendUrlDraft == state.savedBackendUrl
+                    state.copy(
+                        savedBackendUrl = savedUrl,
+                        backendUrlDraft = if (shouldSyncDraft) savedUrl else state.backendUrlDraft
+                    )
+                }
             }
         }
     }
@@ -45,12 +52,12 @@ class AppViewModel(
     }
 
     fun updateBackendUrlDraft(url: String) {
-        _uiState.update { it.copy(backendUrl = url, errorMessage = null) }
+        _uiState.update { it.copy(backendUrlDraft = url, errorMessage = null) }
     }
 
     fun saveBackendUrl() {
         viewModelScope.launch {
-            settingsRepository.saveBackendUrl(_uiState.value.backendUrl)
+            settingsRepository.saveBackendUrl(_uiState.value.backendUrlDraft)
             _uiState.update { it.copy(errorMessage = "Backend URL saved.") }
         }
     }
@@ -71,7 +78,7 @@ class AppViewModel(
 
         viewModelScope.launch {
             val result = chatRepository.sendMessage(
-                baseUrl = _uiState.value.backendUrl,
+                baseUrl = _uiState.value.savedBackendUrl,
                 message = input
             )
 
@@ -99,7 +106,7 @@ class AppViewModel(
     fun checkHealth() {
         viewModelScope.launch {
             _uiState.update { it.copy(healthStatus = "Checking backend…") }
-            val result = chatRepository.checkHealth(_uiState.value.backendUrl)
+            val result = chatRepository.checkHealth(_uiState.value.backendUrlDraft)
             _uiState.update { state ->
                 result.fold(
                     onSuccess = { response ->

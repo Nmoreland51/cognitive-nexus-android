@@ -41,7 +41,7 @@ app/build/outputs/apk/debug/app-debug.apk
 1. Enable Developer Options and USB debugging on device.
 2. Connect device via USB (or set up wireless debugging).
 3. Verify device appears in Android Studio.
-4. Use a backend URL reachable from the phone (LAN IP or HTTPS URL), not `10.0.2.2`.
+4. Use a backend URL reachable from the phone (prefer HTTPS for release installs), not `10.0.2.2`.
 
 ## Configure backend URL
 
@@ -82,6 +82,6 @@ This app depends on the Cognitive Nexus backend API contract in `backend-referen
 ## Networking notes (important)
 
 - `10.0.2.2` works only from Android emulator to reach host machine localhost.
-- Physical phones must use a reachable LAN IP or HTTPS backend URL.
+- Physical phones must use a backend reachable from the device; release installs should use HTTPS.
 - Android localhost (`127.0.0.1` on device) is **not** your computer's localhost.
 - Never embed API keys or secrets in the APK.

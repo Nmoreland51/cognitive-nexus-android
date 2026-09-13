@@ -59,6 +59,7 @@
 2. `gradle wrapper --gradle-version 8.7` (repo root)  
    - **Outcome:** Failed due to Android plugin resolution at configuration time:
    - `Plugin [id: 'com.android.application', version: '8.5.2', apply: false] was not found ...`
+   - Note: AGP `8.5.2` is a valid release; this failure indicates dependency resolution/access in this environment, not an invalid version selection.
 
 3. Wrapper generation in temporary minimal project and copy to repo:
    - Commands run under `/tmp/cn-wrapper` with temporary `settings.gradle.kts` + `build.gradle.kts`
@@ -68,9 +69,13 @@
 4. `./gradlew tasks`  
    - **Outcome:** Failed at configuration stage with the same plugin resolution error:
    - `Plugin [id: 'com.android.application', version: '8.5.2', apply: false] was not found ...`
+   - Interpretation: repository/plugin artifact resolution was unavailable in this environment at run time.
 
 5. `./gradlew assembleDebug`  
    - **Outcome:** Failed at configuration stage with the same plugin resolution error.
+
+6. `./gradlew tasks` (re-run after review fixes)  
+   - **Outcome:** Same plugin resolution failure persisted.
 
 ## Build outcome
 

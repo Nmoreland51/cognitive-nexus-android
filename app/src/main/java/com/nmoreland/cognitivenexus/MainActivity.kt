@@ -105,7 +105,7 @@ private fun AppRoot(viewModel: AppViewModel) {
     ) { paddingValues ->
         if (state.showSettings) {
             SettingsScreen(
-                backendUrl = state.backendUrl,
+                backendUrl = state.backendUrlDraft,
                 onBackendUrlChange = viewModel::updateBackendUrlDraft,
                 onSave = viewModel::saveBackendUrl,
                 onCheckConnection = viewModel::checkHealth,
@@ -247,7 +247,7 @@ private fun SettingsScreen(
         )
         Spacer(modifier = Modifier.height(8.dp))
         Text(
-            text = "For emulator use 10.0.2.2. For a physical phone, use a reachable LAN IP or HTTPS URL.",
+            text = "For emulator use 10.0.2.2. Release builds should use HTTPS backends; cleartext HTTP is intended for debug/testing only.",
             style = MaterialTheme.typography.bodySmall,
             color = Color.Gray
         )
