@@ -153,14 +153,35 @@ class AppViewModelTest {
 
         assertEquals("https://draft.example.com", chat.lastHealthBaseUrl)
     }
+
+    @Test
+    fun saveBackendUrl_success_setsSuccessAndResetsHealthStatus() = runTest {
+        val settings = FakeSettingsDataSource()
+        val chat = FakeChatDataSource(sendResult = Result.success(ChatResponse("ok", "s", "m")))
+        val viewModel = AppViewModel(settings, chat)
+
+        viewModel.updateBackendUrlDraft("https://saved.example.com")
+        viewModel.checkHealth()
+        advanceUntilIdle()
+
+        viewModel.saveBackendUrl()
+        advanceUntilIdle()
+
+        assertEquals("https://saved.example.com", settings.lastSavedUrl)
+        assertEquals("Backend URL saved.", viewModel.uiState.value.successMessage)
+        assertEquals("Health check not run yet.", viewModel.uiState.value.healthStatus)
+    }
 }
 
 private class FakeSettingsDataSource : SettingsDataSource {
     private val state = MutableStateFlow(SettingsRepository.DEFAULT_BACKEND_URL)
+    var lastSavedUrl: String? = null
+        private set
 
     override val backendUrl: Flow<String> = state.asStateFlow()
 
     override suspend fun saveBackendUrl(url: String) {
+        lastSavedUrl = url
         state.value = url
     }
 }

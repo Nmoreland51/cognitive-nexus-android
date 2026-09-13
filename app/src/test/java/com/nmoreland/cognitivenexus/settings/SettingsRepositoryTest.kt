@@ -29,10 +29,10 @@ class SettingsRepositoryTest {
     }
 
     @Test
-    fun normalizeBackendUrl_dropsPathSegmentsToServerRoot() {
+    fun normalizeBackendUrl_preservesSubpathDeployments() {
         assertEquals(
-            "https://example.com/",
-            SettingsRepository.normalizeBackendUrl("https://example.com/api/v1")
+            "https://example.com/cognitive-nexus/",
+            SettingsRepository.normalizeBackendUrl("https://example.com/cognitive-nexus")
         )
     }
 }
