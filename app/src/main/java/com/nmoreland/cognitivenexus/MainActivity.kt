@@ -43,7 +43,10 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.unit.dp
+import androidx.compose.foundation.text.KeyboardActions
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.nmoreland.cognitivenexus.model.ChatMessage
 import com.nmoreland.cognitivenexus.model.MessageRole
@@ -75,7 +78,17 @@ private fun AppRoot(viewModel: AppViewModel) {
     val snackbarHostState = remember { SnackbarHostState() }
 
     LaunchedEffect(state.errorMessage) {
-        state.errorMessage?.let { snackbarHostState.showSnackbar(it) }
+        state.errorMessage?.let {
+            snackbarHostState.showSnackbar(it)
+            viewModel.consumeErrorMessage()
+        }
+    }
+
+    LaunchedEffect(state.successMessage) {
+        state.successMessage?.let {
+            snackbarHostState.showSnackbar(it)
+            viewModel.consumeSuccessMessage()
+        }
     }
 
     Scaffold(
@@ -158,7 +171,7 @@ private fun ChatScreen(
                 .fillMaxWidth(),
             verticalArrangement = Arrangement.spacedBy(8.dp)
         ) {
-            items(messages) { message ->
+            items(items = messages, key = { it.id }) { message ->
                 MessageBubble(message = message)
             }
 
@@ -183,7 +196,9 @@ private fun ChatScreen(
                 onValueChange = onInputChange,
                 modifier = Modifier.weight(1f),
                 placeholder = { Text("Type a message") },
-                maxLines = 4
+                maxLines = 4,
+                keyboardOptions = KeyboardOptions(imeAction = ImeAction.Send),
+                keyboardActions = KeyboardActions(onSend = { onSend() })
             )
             Button(onClick = onSend, enabled = input.isNotBlank() && !isLoading) {
                 Text("Send")

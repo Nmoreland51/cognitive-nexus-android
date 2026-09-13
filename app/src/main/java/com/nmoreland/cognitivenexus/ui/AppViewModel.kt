@@ -3,9 +3,11 @@ package com.nmoreland.cognitivenexus.ui
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
+import com.nmoreland.cognitivenexus.data.ChatDataSource
 import com.nmoreland.cognitivenexus.data.ChatRepository
 import com.nmoreland.cognitivenexus.model.ChatMessage
 import com.nmoreland.cognitivenexus.model.MessageRole
+import com.nmoreland.cognitivenexus.settings.SettingsDataSource
 import com.nmoreland.cognitivenexus.settings.SettingsRepository
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -18,6 +20,7 @@ data class AppUiState(
     val currentInput: String = "",
     val isLoading: Boolean = false,
     val errorMessage: String? = null,
+    val successMessage: String? = null,
     val showSettings: Boolean = false,
     val savedBackendUrl: String = SettingsRepository.DEFAULT_BACKEND_URL,
     val backendUrlDraft: String = SettingsRepository.DEFAULT_BACKEND_URL,
@@ -26,8 +29,8 @@ data class AppUiState(
 )
 
 class AppViewModel(
-    private val settingsRepository: SettingsRepository,
-    private val chatRepository: ChatRepository = ChatRepository()
+    private val settingsRepository: SettingsDataSource,
+    private val chatRepository: ChatDataSource = ChatRepository()
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow(AppUiState())
@@ -58,7 +61,7 @@ class AppViewModel(
     fun saveBackendUrl() {
         viewModelScope.launch {
             settingsRepository.saveBackendUrl(_uiState.value.backendUrlDraft)
-            _uiState.update { it.copy(errorMessage = "Backend URL saved.") }
+            _uiState.update { it.copy(successMessage = "Backend URL saved.") }
         }
     }
 
@@ -72,7 +75,8 @@ class AppViewModel(
                 messages = it.messages + userMessage,
                 currentInput = "",
                 isLoading = true,
-                errorMessage = null
+                errorMessage = null,
+                successMessage = null
             )
         }
 
@@ -122,6 +126,14 @@ class AppViewModel(
         }
     }
 
+    fun consumeErrorMessage() {
+        _uiState.update { it.copy(errorMessage = null) }
+    }
+
+    fun consumeSuccessMessage() {
+        _uiState.update { it.copy(successMessage = null) }
+    }
+
     fun showSettings() {
         _uiState.update { it.copy(showSettings = true) }
     }
@@ -132,7 +144,7 @@ class AppViewModel(
 }
 
 class AppViewModelFactory(
-    private val settingsRepository: SettingsRepository
+    private val settingsRepository: SettingsDataSource
 ) : ViewModelProvider.Factory {
     @Suppress("UNCHECKED_CAST")
     override fun <T : ViewModel> create(modelClass: Class<T>): T {

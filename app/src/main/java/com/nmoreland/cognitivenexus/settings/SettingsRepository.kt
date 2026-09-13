@@ -7,24 +7,34 @@ import androidx.datastore.preferences.preferencesDataStore
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 
+interface SettingsDataSource {
+    val backendUrl: Flow<String>
+    suspend fun saveBackendUrl(url: String)
+}
+
+
 private val Context.dataStore by preferencesDataStore(name = "user_settings")
 
-class SettingsRepository(private val context: Context) {
+class SettingsRepository(private val context: Context) : SettingsDataSource {
     private val backendUrlKey = stringPreferencesKey("backend_url")
 
-    val backendUrl: Flow<String> = context.dataStore.data.map { preferences ->
+    override val backendUrl: Flow<String> = context.dataStore.data.map { preferences ->
         preferences[backendUrlKey] ?: DEFAULT_BACKEND_URL
     }
 
-    suspend fun saveBackendUrl(url: String) {
+    override suspend fun saveBackendUrl(url: String) {
         context.dataStore.edit { preferences ->
             preferences[backendUrlKey] = normalizeUrl(url)
         }
     }
 
     private fun normalizeUrl(url: String): String {
-        val trimmed = url.trim().ifEmpty { DEFAULT_BACKEND_URL }
-        return if (trimmed.endsWith("/")) trimmed else "$trimmed/"
+        var normalized = url.trim().ifEmpty { DEFAULT_BACKEND_URL }
+        normalized = normalized.removeSuffix("/")
+        if (normalized.endsWith("/api")) {
+            normalized = normalized.removeSuffix("/api")
+        }
+        return "$normalized/"
     }
 
     companion object {

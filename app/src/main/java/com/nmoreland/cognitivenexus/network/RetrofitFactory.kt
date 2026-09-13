@@ -19,9 +19,13 @@ object RetrofitFactory {
         .build()
 
     private fun normalizeBaseUrl(raw: String): String {
-        val trimmed = raw.trim()
-        if (trimmed.isEmpty()) return "http://10.0.2.2:8000/"
-        return if (trimmed.endsWith("/")) trimmed else "$trimmed/"
+        var normalized = raw.trim()
+        if (normalized.isEmpty()) return "http://10.0.2.2:8000/"
+        normalized = normalized.removeSuffix("/")
+        if (normalized.endsWith("/api")) {
+            normalized = normalized.removeSuffix("/api")
+        }
+        return "$normalized/"
     }
 
     fun backendApi(baseUrl: String): BackendApi {
