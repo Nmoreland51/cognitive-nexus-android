@@ -35,6 +35,7 @@ class AppViewModel(
 
     private val _uiState = MutableStateFlow(AppUiState())
     val uiState: StateFlow<AppUiState> = _uiState.asStateFlow()
+    private var latestHealthRequestId: Long = 0
 
     init {
         viewModelScope.launch {
@@ -120,9 +121,13 @@ class AppViewModel(
     }
 
     fun checkHealth() {
+        val requestId = ++latestHealthRequestId
         viewModelScope.launch {
             _uiState.update { it.copy(healthStatus = "Checking backend…") }
             val result = chatRepository.checkHealth(_uiState.value.backendUrlDraft)
+            if (requestId != latestHealthRequestId) {
+                return@launch
+            }
             _uiState.update { state ->
                 result.fold(
                     onSuccess = { response ->

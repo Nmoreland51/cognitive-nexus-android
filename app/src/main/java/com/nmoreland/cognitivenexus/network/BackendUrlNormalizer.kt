@@ -14,6 +14,7 @@ object BackendUrlNormalizer {
             val scheme = uri.scheme?.lowercase() ?: return@runCatching fallback
             if (scheme != "http" && scheme != "https") return@runCatching fallback
             val authority = uri.rawAuthority ?: return@runCatching fallback
+            if (uri.rawQuery != null || uri.rawFragment != null) return@runCatching fallback
 
             var path = (uri.rawPath ?: "").trim()
             path = path.removeSuffix("/")

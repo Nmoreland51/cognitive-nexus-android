@@ -100,6 +100,9 @@
 12. `./gradlew test` (re-run after last review fixes)  
    - **Outcome:** Same plugin resolution failure persisted before test execution.
 
+13. `./gradlew test` (re-run after final edge-case fixes)  
+   - **Outcome:** Same plugin resolution failure persisted before test execution.
+
 ## Build outcome
 
 - Debug build did **not** complete in this environment because Android Gradle Plugin dependency resolution failed before task execution.

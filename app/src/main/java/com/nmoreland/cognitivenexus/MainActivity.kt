@@ -210,7 +210,11 @@ private fun ChatScreen(
                 placeholder = { Text("Type a message") },
                 maxLines = 4,
                 keyboardOptions = KeyboardOptions(imeAction = ImeAction.Send),
-                keyboardActions = KeyboardActions(onSend = { onSend() })
+                keyboardActions = KeyboardActions(onSend = {
+                    if (input.isNotBlank() && !isLoading) {
+                        onSend()
+                    }
+                })
             )
             Button(
                 onClick = onSend,

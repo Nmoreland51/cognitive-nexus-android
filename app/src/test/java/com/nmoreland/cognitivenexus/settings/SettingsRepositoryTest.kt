@@ -43,4 +43,12 @@ class SettingsRepositoryTest {
             SettingsRepository.normalizeBackendUrl("https://example.com/my-api")
         )
     }
+
+    @Test
+    fun normalizeBackendUrl_rejectsQueryAndFragment() {
+        assertEquals(
+            SettingsRepository.DEFAULT_BACKEND_URL,
+            SettingsRepository.normalizeBackendUrl("https://example.com/path?token=abc#frag")
+        )
+    }
 }
