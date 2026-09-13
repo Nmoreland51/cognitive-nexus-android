@@ -21,7 +21,7 @@ android {
     buildFeatures { compose = true; buildConfig = true }
 
     buildTypes {
-        debug { applicationIdSuffix = ".debug"; versionNameSuffix = "-debug" }
+        debug { applicationIdSuffix = ".dashboard"; versionNameSuffix = "-dashboard-preview" }
         release {
             isMinifyEnabled = false
             val keystorePath = providers.environmentVariable("ANDROID_KEYSTORE_PATH").orNull
