@@ -174,7 +174,23 @@ private fun NexusHeader(onDrawer: () -> Unit, selectedTab: Int, onTabSelected: (
 }
 
 @Composable
-private fun MetricGrid(metrics: List<Pair<String, String>>) { Column(verticalArrangement = Arrangement.spacedBy(10.dp)) { metrics.chunked(2).forEach { row -> Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(10.dp)) { row.forEach { (label, value) -> Surface(Modifier.weight(1f), color = NexusMist, shape = RoundedCornerShape(10.dp)) { Column(Modifier.padding(14.dp)) { Text(label, color = NexusMuted, style = MaterialTheme.typography.labelMedium); Text(value, color = NexusInk, fontSize = 21.sp, lineHeight = 25.sp, fontWeight = FontWeight.Medium, maxLines = 2, overflow = TextOverflow.Ellipsis) } }; if (row.size == 1) Spacer(Modifier.weight(1f)) } } } }
+private fun MetricGrid(metrics: List<Pair<String, String>>) {
+    Column(verticalArrangement = Arrangement.spacedBy(10.dp)) {
+        metrics.chunked(2).forEach { row ->
+            Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(10.dp)) {
+                row.forEach { (label, value) ->
+                    Surface(Modifier.weight(1f), color = NexusMist, shape = RoundedCornerShape(10.dp)) {
+                        Column(Modifier.padding(14.dp)) {
+                            Text(label, color = NexusMuted, style = MaterialTheme.typography.labelMedium)
+                            Text(value, color = NexusInk, fontSize = 21.sp, lineHeight = 25.sp, fontWeight = FontWeight.Medium, maxLines = 2, overflow = TextOverflow.Ellipsis)
+                        }
+                    }
+                }
+                if (row.size == 1) Spacer(Modifier.weight(1f))
+            }
+        }
+    }
+}
 @Composable private fun SectionTitle(title: String) = Text(title, style = MaterialTheme.typography.titleLarge, color = NexusInk, fontWeight = FontWeight.Bold, modifier = Modifier.padding(top = 25.dp, bottom = 10.dp))
 @Composable private fun Capability(title: String, body: String) { Surface(color = NexusMist, shape = RoundedCornerShape(9.dp), modifier = Modifier.fillMaxWidth().padding(bottom = 8.dp)) { Column(Modifier.padding(14.dp)) { Text(title, fontWeight = FontWeight.Bold); Text(body, color = NexusMuted, style = MaterialTheme.typography.bodySmall, modifier = Modifier.padding(top = 4.dp)) } } }
 @Composable private fun QuickAction(title: String, detail: String) { Row(Modifier.fillMaxWidth().clickable { }.padding(vertical = 10.dp), verticalAlignment = Alignment.CenterVertically) { Surface(color = NexusCoral, shape = RoundedCornerShape(7.dp), modifier = Modifier.size(8.dp)) {}; Spacer(Modifier.width(10.dp)); Column { Text(title, fontWeight = FontWeight.SemiBold); Text(detail, color = NexusMuted, style = MaterialTheme.typography.bodySmall) } } }
