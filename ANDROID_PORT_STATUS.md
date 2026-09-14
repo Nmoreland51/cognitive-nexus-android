@@ -17,6 +17,7 @@ This section supersedes the historical preview results below. Work is on review 
 - `backend/test_api.py`
 - `backend/live_check.py`
 - `backend-reference/MOBILE_API_V2.md`
+- `REMOTE_ACCESS.md`
 - `app/src/main/java/com/nmoreland/cognitivenexus/data/NexusRepository.kt`
 - `app/src/main/java/com/nmoreland/cognitivenexus/data/TokenVault.kt`
 - `app/src/main/java/com/nmoreland/cognitivenexus/ui/NexusViewModel.kt`
@@ -59,6 +60,18 @@ No original Python-engine source files were edited. Live checks initialized norm
   Live inference validation verifies provider execution, **not answer accuracy**: a second arithmetic
   request returned the incorrect answer `The answer is two.` The adapter does not correct or fabricate
   model outputs. Evaluate the chosen LLM separately for answer quality.
+- GitHub Actions run **34797429987**, commit `9304d9b2ce14067e60f7f3ef28a2705f87efc2d6`:
+  all 10 Python tests, all 4 Kotlin unit tests, `./gradlew tasks`, and `./gradlew :app:assembleDebug`
+  **passed**, including the final native image-export control and status-bar contrast fix.
+  APK output: `app/build/outputs/apk/debug/app-debug.apk` (18,178,014 bytes).
+  Verified artifact: `10330396695`, `cognitive-nexus-native-backend-v2-apk`.
+  [Download artifact ZIP](https://github.com/Nmoreland51/cognitive-nexus-android/actions/runs/34797429987/artifacts/10330396695).
+  The archive's `build-info.txt` confirms that exact commit and package `com.nmoreland.cognitivenexus.mobile`.
+  APK SHA-256: `FDFA0E879A32A14CA8D011832A6C662DE409E790A7DE673828F980E2FC91E739`.
+- Real `NexusEngine.execute` web-research smoke test using the public query
+  `Kotlin programming language official documentation`, with 3 sources, no AI summary, and no memory save:
+  **3 actual results, 3 successfully scraped pages, zero errors**. Reports saved to isolated test output.
+  This verifies the engine dispatch path; the Android phone interaction itself has not been tested.
 
 ### Supported vs still unverified
 
@@ -66,7 +79,7 @@ All main native sections now call implemented v2 operations. Jobs, authenticated
 explicit memory changes with forget confirmation, file selection, shared persona, and model controls are wired.
 The app checks API version before connecting; old demo endpoints are never used. Fallback text is rejected.
 
-Real live checks do **not yet verify** web/Reality-First/Bloodhound research,
+Real live checks do **not yet verify** Reality-First/Bloodhound research,
 image generation, or a ComfyUI workflow end-to-end. ComfyUI was unavailable during detection. These need
 their real dependencies/models and functional smoke tests before claiming complete parity.
 Advanced desktop router tuning, raw logs/evaluation commands, arbitrary tools, token-by-token streaming,
@@ -80,8 +93,14 @@ Workflow: `.github/workflows/android-release.yml` now tests Python and Kotlin an
 has write permissions. Required signing secrets: `ANDROID_KEYSTORE_BASE64`, `ANDROID_KEYSTORE_PASSWORD`,
 `ANDROID_KEY_ALIAS`, `ANDROID_KEY_PASSWORD`. Missing secrets skip a signed release, not the debug build.
 
-Next: validate CI, review/merge the branch, start the adapter and pair the phone, then complete the remaining
+Next: review/merge the branch, start the adapter and pair the phone, then complete the remaining
 real-provider and physical-device checks. Tag `v1.0.0` only after main is green and signing is configured.
+
+Home-and-away access was requested. `REMOTE_ACCESS.md` documents private HTTPS using Tailscale Serve.
+Deployment is **not complete**: no Tailscale install/login, public exposure, or phone pairing was performed.
+User approval/account setup is needed before configuring that external networking service.
+The GitHub Releases API returned no releases during this work. The verified download above is a debug
+Actions artifact, not a signed GitHub Release.
 
 ## Historical original starter / dashboard preview (not current v2 validation)
 

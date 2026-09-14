@@ -59,6 +59,7 @@ public internet. For production, put the service behind authenticated HTTPS and 
 access from the research engine. This is a single-owner service, not a multi-tenant API.
 
 In the phone: Settings → backend URL + access token → Save and connect → select a detected provider/model.
+For one secure connection at home **and away**, follow [REMOTE_ACCESS.md](REMOTE_ACCESS.md).
 The token is encrypted using Android Keystore before DataStore storage. Backups are disabled. Blank
 token input keeps a saved token only when the URL is unchanged; changing server clears it.
 
