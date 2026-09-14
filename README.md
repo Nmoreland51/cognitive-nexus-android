@@ -4,7 +4,7 @@ Cognitive Nexus Android is a native Kotlin / Jetpack Compose / Material 3 client
 
 This is not a website, WebView, or embedded Streamlit. LLMs and image models run on your computer/server. The APK does not contain model weights or provider keys and does not work as an offline LLM. Missing providers show errors, not fabricated replies or placeholder images.
 
-The new debug app is named **Cognitive Nexus Mobile**, package `com.nmoreland.cognitivenexus.mobile`, version code 2. Home shows the source revision. It installs separately from the previous `.debug` and `.dashboard` previews. Only this build supports Mobile API v2.
+The new debug app is named **Cognitive Nexus Mobile**, package `com.nmoreland.cognitivenexus.mobile`, version code 3. Home shows the source revision. It installs separately from the previous `.debug` and `.dashboard` previews. Only this build supports Mobile API v2.
 
 ## Open and build
 
@@ -69,7 +69,7 @@ tasks failed; review saved outputs before submitting again. Changing backend URL
 
 For an Android emulator, the default backend URL is `http://10.0.2.2:8000/`. `10.0.2.2` is Android Emulator's special address for the computer hosting the emulator, so it reaches a backend running on that computer. It works only on an emulator.
 
-For a physical phone, open **Settings** and use a reachable LAN URL such as `http://192.168.1.50:8000/` during debug development, or a deployed HTTPS URL. Do not use `localhost`: on a phone it means the phone itself, not your computer. Production must use HTTPS; release builds do not permit cleartext HTTP connections.
+For a physical phone, open **Settings** and use a reachable private LAN URL such as `http://192.168.1.50:8000/`, or a deployed HTTPS URL. Do not use `localhost`: on a phone it means the phone itself, not your computer. The signed app permits HTTP only for numeric private-LAN IPv4 addresses (`10.x.x.x`, `172.16–31.x.x`, or `192.168.x.x`) so home-network development works. Public and production backends must use HTTPS.
 
 Debug builds intentionally permit HTTP for local development. Keep your backend private and move to HTTPS before distribution.
 

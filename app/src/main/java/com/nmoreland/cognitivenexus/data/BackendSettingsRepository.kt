@@ -31,7 +31,9 @@ class BackendSettingsRepository(context: Context) {
     suspend fun saveConnection(input: String, token: String) {
         val url = input.trim().toHttpUrlOrNull() ?: error("Enter a valid http:// or https:// backend address.")
         require(url.username.isEmpty() && url.password.isEmpty() && url.query == null && url.fragment == null) { "Do not put credentials, queries, or fragments in the backend URL." }
-        require(BuildConfig.DEBUG || url.isHttps) { "Release builds require HTTPS." }
+        require(BuildConfig.DEBUG || url.isHttps || isPrivateLanHttp(url.host)) {
+            "Release builds require HTTPS, except for a private LAN IPv4 backend."
+        }
         val normalized = url.toString().let { if (it.endsWith('/')) it else "$it/" }
         require(token.isBlank() || (token.length >= 32 && token.all { it.code in 33..126 })) { "The access token must have at least 32 ASCII characters, without spaces." }
         val encrypted = if (token.isNotBlank()) vault.encrypt(token.trim()) else null
@@ -42,6 +44,20 @@ class BackendSettingsRepository(context: Context) {
             it[urlKey] = normalized
             if (encrypted != null) it[tokenKey] = encrypted
         }
+    }
+
+    /**
+     * A signed app may use HTTP only for a numeric address on a private/home
+     * network. Public servers must use HTTPS; hostnames are not resolved here
+     * so a public name cannot be smuggled through this local-development path.
+     */
+    private fun isPrivateLanHttp(host: String): Boolean {
+        val octets = host.split('.').map { it.toIntOrNull() ?: return false }
+        if (octets.size != 4 || octets.any { it !in 0..255 }) return false
+        return octets[0] == 10 ||
+            (octets[0] == 172 && octets[1] in 16..31) ||
+            (octets[0] == 192 && octets[1] == 168) ||
+            octets[0] == 127
     }
     suspend fun saveOptions(value: EngineOptions) { store.edit { it[optionsKey] = json.encodeToString(value) } }
     suspend fun session(): String {

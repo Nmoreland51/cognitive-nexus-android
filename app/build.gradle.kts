@@ -13,8 +13,8 @@ android {
         applicationId = "com.nmoreland.cognitivenexus"
         minSdk = 26
         targetSdk = 35
-        versionCode = 2
-        versionName = "1.0.0"
+        versionCode = 3
+        versionName = "1.0.1"
         buildConfigField("String", "SOURCE_REVISION", "\"${providers.environmentVariable("GITHUB_SHA").orNull?.take(12) ?: "local"}\"")
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }

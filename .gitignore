@@ -19,3 +19,5 @@ __pycache__/
 .venv/
 backend-data/
 keystore.properties
+backend-server.out.log
+backend-server.err.log
