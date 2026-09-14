@@ -15,7 +15,8 @@ data class NexusState(
     val backendUrl: String = DEFAULT_BACKEND_URL, val connected: Boolean = false,
     val connectionStatus: String = "Backend configuration required", val settingsMessage: String = "",
     val sessionId: String = "", val messages: List<Message> = emptyList(), val sessions: List<Session> = emptyList(),
-    val options: EngineOptions = EngineOptions(), val operations: Map<String, OperationState> = emptyMap(),
+    val options: EngineOptions = EngineOptions(), val darkTheme: Boolean = false,
+    val operations: Map<String, OperationState> = emptyMap(),
 )
 
 class NexusViewModel(private val settings: BackendSettingsRepository) : ViewModel() {
@@ -27,6 +28,7 @@ class NexusViewModel(private val settings: BackendSettingsRepository) : ViewMode
 
     init {
         viewModelScope.launch { settings.options.collect { value -> mutable.update { it.copy(options = value) } } }
+        viewModelScope.launch { settings.darkTheme.collect { value -> mutable.update { it.copy(darkTheme = value) } } }
         viewModelScope.launch {
             settings.connection.distinctUntilChanged().collectLatest { connection ->
                 jobs.values.forEach { it.cancel() }; jobs.clear(); connectionJob?.cancel()
@@ -41,6 +43,16 @@ class NexusViewModel(private val settings: BackendSettingsRepository) : ViewMode
     fun updateOptions(options: EngineOptions) {
         mutable.update { it.copy(options = options) }
         viewModelScope.launch { try { settings.saveOptions(options) } catch (e: Exception) { if (e is CancellationException) throw e; mutable.update { it.copy(settingsMessage = readableError(e)) } } }
+    }
+    fun setDarkTheme(enabled: Boolean) {
+        mutable.update { it.copy(darkTheme = enabled) }
+        viewModelScope.launch {
+            try { settings.saveDarkTheme(enabled) }
+            catch (e: Exception) {
+                if (e is CancellationException) throw e
+                mutable.update { it.copy(settingsMessage = readableError(e)) }
+            }
+        }
     }
     fun saveConnection(url: String, token: String) {
         viewModelScope.launch {

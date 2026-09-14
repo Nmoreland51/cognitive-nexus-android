@@ -76,7 +76,7 @@ import java.nio.charset.CodingErrorAction
             items(state.messages, key = { it.id }) { message ->
                 val user = message.role == "user"
                 Row(Modifier.fillMaxWidth(), horizontalArrangement = if (user) Arrangement.End else Arrangement.Start) {
-                    Surface(color = if (user) Coral.copy(alpha = .10f) else Mist, shape = MaterialTheme.shapes.large, modifier = Modifier.fillMaxWidth(.94f)) {
+                    Surface(color = if (user) Coral.copy(alpha = .18f) else MaterialTheme.colorScheme.surfaceVariant, shape = MaterialTheme.shapes.large, modifier = Modifier.fillMaxWidth(.94f)) {
                         Column(Modifier.padding(14.dp)) {
                             Text(if (user) "You" else "Cognitive Nexus", style = MaterialTheme.typography.labelSmall)
                             androidx.compose.foundation.text.selection.SelectionContainer { Text(message.content) }

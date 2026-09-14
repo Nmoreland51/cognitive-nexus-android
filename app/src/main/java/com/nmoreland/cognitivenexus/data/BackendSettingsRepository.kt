@@ -25,9 +25,11 @@ class BackendSettingsRepository(context: Context) {
     private val optionsKey = stringPreferencesKey("engine_options")
     private val sessionKey = stringPreferencesKey("mobile_session")
     private val pendingKey = stringPreferencesKey("pending_jobs")
+    private val darkThemeKey = stringPreferencesKey("dark_theme")
     private val json = Json { ignoreUnknownKeys = true }
     val connection = store.data.map { Connection(it[urlKey] ?: DEFAULT_BACKEND_URL, vault.decrypt(it[tokenKey] ?: "")) }
     val options = store.data.map { prefs -> runCatching { json.decodeFromString<EngineOptions>(prefs[optionsKey] ?: "{}") }.getOrDefault(EngineOptions()) }
+    val darkTheme = store.data.map { it[darkThemeKey] == "true" }
     suspend fun saveConnection(input: String, token: String) {
         val url = input.trim().toHttpUrlOrNull() ?: error("Enter a valid http:// or https:// backend address.")
         require(url.username.isEmpty() && url.password.isEmpty() && url.query == null && url.fragment == null) { "Do not put credentials, queries, or fragments in the backend URL." }
@@ -60,6 +62,7 @@ class BackendSettingsRepository(context: Context) {
             octets[0] == 127
     }
     suspend fun saveOptions(value: EngineOptions) { store.edit { it[optionsKey] = json.encodeToString(value) } }
+    suspend fun saveDarkTheme(enabled: Boolean) { store.edit { it[darkThemeKey] = enabled.toString() } }
     suspend fun session(): String {
         val current = store.data.first()[sessionKey]
         if (current != null) return current

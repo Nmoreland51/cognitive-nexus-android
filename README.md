@@ -4,7 +4,7 @@ Cognitive Nexus Android is a native Kotlin / Jetpack Compose / Material 3 client
 
 This is not a website, WebView, or embedded Streamlit. LLMs and image models run on your computer/server. The APK does not contain model weights or provider keys and does not work as an offline LLM. Missing providers show errors, not fabricated replies or placeholder images.
 
-The new debug app is named **Cognitive Nexus Mobile**, package `com.nmoreland.cognitivenexus.mobile`, version code 3. Home shows the source revision. It installs separately from the previous `.debug` and `.dashboard` previews. Only this build supports Mobile API v2.
+The new debug app is named **Cognitive Nexus Mobile**, package `com.nmoreland.cognitivenexus.mobile`, version code 4. Home shows the source revision. It installs separately from the previous `.debug` and `.dashboard` previews. Only this build supports Mobile API v2. The top-right appearance menu saves your light/dark preference on the device.
 
 ## Open and build
 

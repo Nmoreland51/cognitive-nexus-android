@@ -1,5 +1,6 @@
 package com.nmoreland.cognitivenexus.ui
 
+import android.app.Activity
 import android.content.Intent
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
@@ -7,15 +8,20 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Menu
 import androidx.compose.material.icons.filled.Refresh
+import androidx.compose.material.icons.filled.DarkMode
+import androidx.compose.material.icons.filled.LightMode
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalView
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.core.view.WindowCompat
 import androidx.navigation.compose.*
 import com.nmoreland.cognitivenexus.BuildConfig
 import com.nmoreland.cognitivenexus.data.BackendSettingsRepository
@@ -25,6 +31,9 @@ import kotlinx.serialization.json.*
 internal val Coral = Color(0xFFFF4B4B)
 internal val Ink = Color(0xFF262E3D)
 internal val Mist = Color(0xFFF5F6FA)
+private val Night = Color(0xFF101318)
+private val NightSurface = Color(0xFF1A1F29)
+private val NightVariant = Color(0xFF252C38)
 internal val routes = linkedMapOf("overview" to "Home / Overview", "chat" to "Chat",
     "research" to "Reality-First Research", "web" to "Web Research", "knowledge" to "Files / Knowledge",
     "memory" to "Memory", "images" to "Image Generation", "gallery" to "Gallery",
@@ -41,12 +50,25 @@ internal val routes = linkedMapOf("overview" to "Home / Overview", "chat" to "Ch
     val current = entry?.destination?.route ?: "overview"
     val drawer = rememberDrawerState(DrawerValue.Closed)
     val scope = rememberCoroutineScope()
+    var appearanceMenuOpen by rememberSaveable { mutableStateOf(false) }
     val navigate: (String) -> Unit = { route ->
         nav.navigate(route) { launchSingleTop = true; popUpTo(nav.graph.startDestinationId) { saveState = true }; restoreState = true }
         scope.launch { drawer.close() }
     }
-    MaterialTheme(colorScheme = lightColorScheme(primary = Coral, background = Color.White, surface = Color.White,
-        onSurface = Ink, onBackground = Ink, surfaceVariant = Mist)) {
+    val colors = if (state.darkTheme) darkColorScheme(
+        primary = Coral, background = Night, surface = NightSurface, surfaceVariant = NightVariant,
+        onSurface = Color(0xFFE4E8F0), onBackground = Color(0xFFE4E8F0), onSurfaceVariant = Color(0xFFC5CBD7),
+    ) else lightColorScheme(primary = Coral, background = Color.White, surface = Color.White,
+        onSurface = Ink, onBackground = Ink, surfaceVariant = Mist)
+    val view = LocalView.current
+    SideEffect {
+        val window = (view.context as Activity).window
+        window.statusBarColor = colors.surface.toArgb()
+        window.navigationBarColor = colors.surface.toArgb()
+        WindowCompat.getInsetsController(window, view).isAppearanceLightStatusBars = !state.darkTheme
+        WindowCompat.getInsetsController(window, view).isAppearanceLightNavigationBars = !state.darkTheme
+    }
+    MaterialTheme(colorScheme = colors) {
         ModalNavigationDrawer(drawerState = drawer, drawerContent = {
             ModalDrawerSheet {
                 Column(Modifier.verticalScroll(rememberScrollState()).padding(16.dp)) {
@@ -62,14 +84,26 @@ internal val routes = linkedMapOf("overview" to "Home / Overview", "chat" to "Ch
             Scaffold(topBar = {
                 TopAppBar(title = { Text("Cognitive Nexus", fontWeight = FontWeight.Bold) },
                     navigationIcon = { IconButton(onClick = { scope.launch { drawer.open() } }) { Icon(Icons.Default.Menu, "Open navigation") } },
-                    actions = { IconButton(onClick = vm::refreshConnection) { Icon(Icons.Default.Refresh, "Check backend") } })
+                    actions = {
+                        IconButton(onClick = vm::refreshConnection) { Icon(Icons.Default.Refresh, "Check backend") }
+                        Box {
+                            IconButton(onClick = { appearanceMenuOpen = true }) { Icon(Icons.Default.Menu, "Appearance menu") }
+                            DropdownMenu(expanded = appearanceMenuOpen, onDismissRequest = { appearanceMenuOpen = false }) {
+                                DropdownMenuItem(
+                                    text = { Text(if (state.darkTheme) "Use light mode" else "Use dark mode") },
+                                    leadingIcon = { Icon(if (state.darkTheme) Icons.Default.LightMode else Icons.Default.DarkMode, null) },
+                                    onClick = { vm.setDarkTheme(!state.darkTheme); appearanceMenuOpen = false },
+                                )
+                            }
+                        }
+                    })
             }) { padding ->
                 Column(Modifier.padding(padding).fillMaxSize().imePadding()) {
                     ScrollableTabRow(selectedTabIndex = routes.keys.indexOf(current).coerceAtLeast(0), edgePadding = 12.dp) {
                         routes.forEach { (route, title) -> Tab(selected = current == route, onClick = { navigate(route) }, text = { Text(title) }) }
                     }
                     if (!state.connected) {
-                        Surface(color = Mist) {
+                        Surface(color = MaterialTheme.colorScheme.surfaceVariant) {
                             Column(Modifier.fillMaxWidth().padding(12.dp)) {
                                 Text(state.connectionStatus, style = MaterialTheme.typography.bodySmall)
                                 TextButton(onClick = { navigate("settings") }) { Text("Configure backend connection") }
@@ -109,7 +143,7 @@ internal val routes = linkedMapOf("overview" to "Home / Overview", "chat" to "Ch
         Text("Native + real backend · ${BuildConfig.VERSION_NAME}\nBuild ${BuildConfig.SOURCE_REVISION}", color = Coral)
         val data = state.operations["overview"]?.result
         val counts = data?.get("counts") as? JsonObject
-        Surface(shape = MaterialTheme.shapes.large, color = Mist) {
+        Surface(shape = MaterialTheme.shapes.large, color = MaterialTheme.colorScheme.surfaceVariant) {
             Column(Modifier.fillMaxWidth().padding(16.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
                 Text(state.connectionStatus, fontWeight = FontWeight.Bold)
                 Text("LLMs and tools run on your backend. No phone-side model or invented offline replies.")
@@ -173,7 +207,7 @@ internal fun humanText(value: JsonElement): String = when (value) {
             var count by remember { mutableIntStateOf(10) }
             if (value.isEmpty()) Text("None", style = MaterialTheme.typography.bodySmall)
             value.take(count).forEach { child ->
-                Surface(color = Mist, shape = MaterialTheme.shapes.medium, modifier = Modifier.fillMaxWidth().padding(vertical = 3.dp)) {
+                Surface(color = MaterialTheme.colorScheme.surfaceVariant, shape = MaterialTheme.shapes.medium, modifier = Modifier.fillMaxWidth().padding(vertical = 3.dp)) {
                     Column(Modifier.padding(12.dp)) { ResultTree(child, depth + 1) }
                 }
             }
