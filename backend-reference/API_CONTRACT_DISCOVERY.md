@@ -1,5 +1,10 @@
 # API Contract Discovery: Cognitive Nexus Android Client
 
+> Historical v1 discovery. The native backend v2 implementation uses the authenticated adapter in
+> `backend/` and the implemented/tested contract in `MOBILE_API_V2.md`. The original demo image route
+> generates placeholders and is deliberately not used. Claims below about proposed routes are not
+> proof those routes exist; SQLite persistence also does survive process restarts.
+
 ## Overview
 
 This document records the **verified** backend API routes and their behavior. The Android client will communicate exclusively with these endpoints.
@@ -289,4 +294,3 @@ def get_models() -> dict:
 2. 🤖 Android client: Implement Retrofit DTOs and API client
 3. 🧪 Test: Verify health → models → chat flow
 4. 📱 Deployment: Document backend setup for users
-

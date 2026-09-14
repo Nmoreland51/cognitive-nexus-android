@@ -13,15 +13,16 @@ android {
         applicationId = "com.nmoreland.cognitivenexus"
         minSdk = 26
         targetSdk = 35
-        versionCode = 1
+        versionCode = 2
         versionName = "1.0.0"
+        buildConfigField("String", "SOURCE_REVISION", "\"${providers.environmentVariable("GITHUB_SHA").orNull?.take(12) ?: "local"}\"")
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
 
     buildFeatures { compose = true; buildConfig = true }
 
     buildTypes {
-        debug { applicationIdSuffix = ".dashboard"; versionNameSuffix = "-dashboard-preview" }
+        debug { applicationIdSuffix = ".mobile"; versionNameSuffix = "-native-backend-v2" }
         release {
             isMinifyEnabled = false
             val keystorePath = providers.environmentVariable("ANDROID_KEYSTORE_PATH").orNull
@@ -49,6 +50,7 @@ android {
 kotlin { jvmToolchain(17) }
 
 dependencies {
+    testImplementation("junit:junit:4.13.2")
     val composeBom = platform("androidx.compose:compose-bom:2024.12.01")
     implementation(composeBom)
     androidTestImplementation(composeBom)

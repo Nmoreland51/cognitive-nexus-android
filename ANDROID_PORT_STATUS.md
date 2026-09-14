@@ -1,5 +1,82 @@
 # Android Port Status
 
+## Native backend v2 — current work (2026-09-13)
+
+This section supersedes the historical preview results below. Work is on review branch
+`feat/native-backend-v2`, not merged to main. No tag or signed release has been created by this work.
+
+### New files in this change
+
+- `backend/__init__.py`
+- `backend/__main__.py`
+- `backend/models.py`
+- `backend/store.py`
+- `backend/server.py`
+- `backend/engine.py`
+- `backend/requirements.txt`
+- `backend/test_api.py`
+- `backend/live_check.py`
+- `backend-reference/MOBILE_API_V2.md`
+- `app/src/main/java/com/nmoreland/cognitivenexus/data/NexusRepository.kt`
+- `app/src/main/java/com/nmoreland/cognitivenexus/data/TokenVault.kt`
+- `app/src/main/java/com/nmoreland/cognitivenexus/ui/NexusViewModel.kt`
+- `app/src/main/java/com/nmoreland/cognitivenexus/ui/FeatureScreens.kt`
+- `app/src/test/java/com/nmoreland/cognitivenexus/data/api/ContractTest.kt`
+
+### Existing files modified
+
+`.github/workflows/android-release.yml`, `.gitignore`, `README.md`, `ANDROID_PORT_STATUS.md`,
+`backend-reference/API_CONTRACT_DISCOVERY.md`, `app/build.gradle.kts`,
+`app/src/debug/res/values/strings.xml`, `app/src/main/AndroidManifest.xml`,
+`app/src/main/java/com/nmoreland/cognitivenexus/data/BackendSettingsRepository.kt`,
+`app/src/main/java/com/nmoreland/cognitivenexus/data/api/CognitiveNexusApi.kt`,
+`app/src/main/java/com/nmoreland/cognitivenexus/data/api/NetworkClient.kt`,
+`app/src/main/java/com/nmoreland/cognitivenexus/ui/CognitiveNexusApp.kt`.
+
+Removed obsolete v1 `data/ChatRepository.kt`, `ui/ChatViewModel.kt`, and `ui/SettingsViewModel.kt`;
+their functionality is replaced by the v2 repository/ViewModel. They remain recoverable in Git history.
+No original Python-engine source files were edited. Live checks initialized normal engine runtime folders/logs.
+
+### Validation actually performed
+
+- `python -m unittest backend.test_api -v`: **10 tests passed**. An intervening restricted-shell run
+  failed with `sqlite3.OperationalError: unable to open database file` because Windows protected temporary
+  directories were inaccessible. Rerunning with approved access passed all 10 tests.
+- `python -m backend.live_check --engine-root <original-engine-root> --chat --model llama3.2:3b`:
+  overview, memory, notes, gallery, tools, profile, workflows all passed against the real original engine.
+  Real chat passed using **Ollama / llama3.2:3b**, reply: `The number two plus two equals four.`
+  Engine-reported chat duration approximately 12.16 seconds. This is not a mocked response.
+- `.\gradlew.bat tasks`: failed locally with exact first error:
+  `'java' is not recognized as an internal or external command, operable program or batch file.`
+- `.\gradlew.bat :app:assembleDebug`: failed locally with the same missing-Java error.
+- `git diff --check`: passed.
+- Current new APK: **not yet built/verified at this checkpoint**. Old successful preview artifacts below
+  do not verify this code. CI results will be appended after the review-branch build finishes.
+
+### Supported vs still unverified
+
+All main native sections now call implemented v2 operations. Jobs, authenticated media, persisted sessions,
+explicit memory changes with forget confirmation, file selection, shared persona, and model controls are wired.
+The app checks API version before connecting; old demo endpoints are never used. Fallback text is rejected.
+
+Real live checks do **not yet verify** web/Reality-First/Bloodhound research, knowledge ingestion/query,
+image generation, or a ComfyUI workflow end-to-end. ComfyUI was unavailable during detection. These need
+their real dependencies/models and functional smoke tests before claiming complete parity.
+Advanced desktop router tuning, raw logs/evaluation commands, arbitrary tools, token-by-token streaming,
+custom workflow uploading, image export, and full mobile device UI testing remain outstanding.
+Do not describe this as every desktop function fully ported or production-ready.
+
+Workflow: `.github/workflows/android-release.yml` now tests Python and Kotlin and builds a distinctly named
+`cognitive-nexus-native-backend-v2-apk` artifact. Debug label `Cognitive Nexus Mobile`, package
+`com.nmoreland.cognitivenexus.mobile`, version code 2, visible source revision. Only the tag-release job
+has write permissions. Required signing secrets: `ANDROID_KEYSTORE_BASE64`, `ANDROID_KEYSTORE_PASSWORD`,
+`ANDROID_KEY_ALIAS`, `ANDROID_KEY_PASSWORD`. Missing secrets skip a signed release, not the debug build.
+
+Next: validate CI, review/merge the branch, start the adapter and pair the phone, then complete the remaining
+real-provider and physical-device checks. Tag `v1.0.0` only after main is green and signing is configured.
+
+## Historical original starter / dashboard preview (not current v2 validation)
+
 ## Created Android files
 
 - `settings.gradle.kts`
