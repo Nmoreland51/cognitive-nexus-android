@@ -15,7 +15,7 @@ from .store import Store
 
 
 def create_app(engine, data_dir: Path, token: str):
-    if len(token) < 32 or not token.isascii():
+    if len(token) < 32 or any(ord(c) < 33 or ord(c) > 126 for c in token):
         raise ValueError("NEXUS_API_TOKEN must be at least 32 ASCII characters.")
     store = Store(data_dir / "mobile.sqlite3")
     executor = ThreadPoolExecutor(max_workers=1, thread_name_prefix="nexus-engine")

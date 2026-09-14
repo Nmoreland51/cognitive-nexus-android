@@ -12,6 +12,22 @@ import java.io.ByteArrayOutputStream
 
 class NexusRepository(private val settings: BackendSettingsRepository) {
     suspend fun api() = NetworkClient.createApi(settings.connection.first())
+    suspend fun saveImage(id: String, output: java.io.OutputStream) = withContext(Dispatchers.IO) {
+        api().image(id).use { response ->
+            require(response.contentLength() <= 20_000_000) { "Image exceeds the 20 MB download limit." }
+            response.byteStream().use { input ->
+                val buffer = ByteArray(8192)
+                var total = 0
+                while (true) {
+                    val count = input.read(buffer)
+                    if (count < 0) break
+                    total += count
+                    require(total <= 20_000_000) { "Image exceeds the 20 MB download limit." }
+                    output.write(buffer, 0, count)
+                }
+            }
+        }
+    }
     suspend fun image(id: String): Bitmap = withContext(Dispatchers.IO) {
         api().image(id).use { response ->
             require(response.contentLength() <= 20_000_000) { "Image is too large to preview." }

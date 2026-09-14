@@ -276,6 +276,21 @@ import java.nio.charset.CodingErrorAction
         if (selected == id) {
             var bitmap by remember(id) { mutableStateOf<android.graphics.Bitmap?>(null) }
             var error by remember(id) { mutableStateOf<String?>(null) }
+            var saved by remember(id) { mutableStateOf("") }
+            val context = LocalContext.current
+            val scope = rememberCoroutineScope()
+            val save = rememberLauncherForActivityResult(ActivityResultContracts.CreateDocument("image/png")) { uri ->
+                if (uri != null) scope.launch {
+                    saved = "Saving…"
+                    try {
+                        withContext(Dispatchers.IO) {
+                            context.contentResolver.openOutputStream(uri)?.use { vm.repository.saveImage(id, it) }
+                                ?: throw IllegalStateException("Could not open the selected destination.")
+                        }
+                        saved = "Image saved to your selected location."
+                    } catch (e: Exception) { if (e is CancellationException) throw e; saved = readableError(e) }
+                }
+            }
             LaunchedEffect(id) {
                 try { bitmap = vm.repository.image(id) } catch (e: Exception) { if (e is CancellationException) throw e; error = readableError(e) }
             }
@@ -284,6 +299,8 @@ import java.nio.charset.CodingErrorAction
             error?.let { Text(it, color = MaterialTheme.colorScheme.error) }
             Text(item["prompt"]?.jsonPrimitive?.content.orEmpty())
             Text("Provider: ${item["provider"]?.jsonPrimitive?.content.orEmpty()}")
+            OutlinedButton(onClick = { save.launch(item["name"]?.jsonPrimitive?.content ?: "cognitive-nexus.png") }, enabled = saved != "Saving…") { Text("Save image to phone") }
+            if (saved.isNotBlank()) Text(saved)
         }
     }
 }

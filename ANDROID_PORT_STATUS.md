@@ -27,7 +27,7 @@ This section supersedes the historical preview results below. Work is on review 
 
 `.github/workflows/android-release.yml`, `.gitignore`, `README.md`, `ANDROID_PORT_STATUS.md`,
 `backend-reference/API_CONTRACT_DISCOVERY.md`, `app/build.gradle.kts`,
-`app/src/debug/res/values/strings.xml`, `app/src/main/AndroidManifest.xml`,
+`app/src/debug/res/values/strings.xml`, `app/src/main/AndroidManifest.xml`, `app/src/main/res/values/themes.xml`,
 `app/src/main/java/com/nmoreland/cognitivenexus/data/BackendSettingsRepository.kt`,
 `app/src/main/java/com/nmoreland/cognitivenexus/data/api/CognitiveNexusApi.kt`,
 `app/src/main/java/com/nmoreland/cognitivenexus/data/api/NetworkClient.kt`,
@@ -50,8 +50,15 @@ No original Python-engine source files were edited. Live checks initialized norm
   `'java' is not recognized as an internal or external command, operable program or batch file.`
 - `.\gradlew.bat :app:assembleDebug`: failed locally with the same missing-Java error.
 - `git diff --check`: passed.
-- Current new APK: **not yet built/verified at this checkpoint**. Old successful preview artifacts below
-  do not verify this code. CI results will be appended after the review-branch build finishes.
+- GitHub Actions run **34797116866**, commit `2b07a4b500ca7af9cdfd9cd64f09f30b1cee3b89`:
+  `./gradlew tasks`, `./gradlew :app:testDebugUnitTest`, and `./gradlew :app:assembleDebug` all **passed**.
+  Verified output: `app/build/outputs/apk/debug/app-debug.apk`; uploaded copy named
+  `cognitive-nexus-native-backend-v2.apk`. This run validates that commit, not later edits.
+- Expanded live checks also passed the actual authenticated HTTP job routes, chat session history,
+  gallery PNG download, and real file ingestion/hash-vector knowledge retrieval in an isolated store.
+  Live inference validation verifies provider execution, **not answer accuracy**: a second arithmetic
+  request returned the incorrect answer `The answer is two.` The adapter does not correct or fabricate
+  model outputs. Evaluate the chosen LLM separately for answer quality.
 
 ### Supported vs still unverified
 
@@ -59,11 +66,12 @@ All main native sections now call implemented v2 operations. Jobs, authenticated
 explicit memory changes with forget confirmation, file selection, shared persona, and model controls are wired.
 The app checks API version before connecting; old demo endpoints are never used. Fallback text is rejected.
 
-Real live checks do **not yet verify** web/Reality-First/Bloodhound research, knowledge ingestion/query,
+Real live checks do **not yet verify** web/Reality-First/Bloodhound research,
 image generation, or a ComfyUI workflow end-to-end. ComfyUI was unavailable during detection. These need
 their real dependencies/models and functional smoke tests before claiming complete parity.
 Advanced desktop router tuning, raw logs/evaluation commands, arbitrary tools, token-by-token streaming,
-custom workflow uploading, image export, and full mobile device UI testing remain outstanding.
+custom workflow uploading, and full mobile device UI testing remain outstanding. Native image export
+is implemented via Android's document picker; physical-device execution remains untested.
 Do not describe this as every desktop function fully ported or production-ready.
 
 Workflow: `.github/workflows/android-release.yml` now tests Python and Kotlin and builds a distinctly named

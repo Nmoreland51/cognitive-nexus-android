@@ -104,6 +104,8 @@ python -m unittest backend.test_api -v
 python -m backend.live_check --engine-root "C:\path\to\original-cognitive-nexus"
 # Opt-in real local inference test (uses a separate test conversation):
 python -m backend.live_check --engine-root "C:\path\to\original-cognitive-nexus" --chat --model llama3.2:3b
+# Test file ingestion and retrieval without touching your personal knowledge store:
+python -m backend.live_check --engine-root "C:\path\to\original-cognitive-nexus" --knowledge
 ```
 
 ```sh
