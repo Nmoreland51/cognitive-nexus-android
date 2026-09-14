@@ -1,6 +1,5 @@
 package com.nmoreland.cognitivenexus.ui
 
-import android.app.Activity
 import android.content.Intent
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
@@ -14,14 +13,11 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.platform.LocalView
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
-import androidx.core.view.WindowCompat
 import androidx.navigation.compose.*
 import com.nmoreland.cognitivenexus.BuildConfig
 import com.nmoreland.cognitivenexus.data.BackendSettingsRepository
@@ -60,14 +56,6 @@ internal val routes = linkedMapOf("overview" to "Home / Overview", "chat" to "Ch
         onSurface = Color(0xFFE4E8F0), onBackground = Color(0xFFE4E8F0), onSurfaceVariant = Color(0xFFC5CBD7),
     ) else lightColorScheme(primary = Coral, background = Color.White, surface = Color.White,
         onSurface = Ink, onBackground = Ink, surfaceVariant = Mist)
-    val view = LocalView.current
-    SideEffect {
-        val window = (view.context as Activity).window
-        window.statusBarColor = colors.surface.toArgb()
-        window.navigationBarColor = colors.surface.toArgb()
-        WindowCompat.getInsetsController(window, view).isAppearanceLightStatusBars = !state.darkTheme
-        WindowCompat.getInsetsController(window, view).isAppearanceLightNavigationBars = !state.darkTheme
-    }
     MaterialTheme(colorScheme = colors) {
         ModalNavigationDrawer(drawerState = drawer, drawerContent = {
             ModalDrawerSheet {
