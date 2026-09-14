@@ -7,8 +7,6 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Menu
 import androidx.compose.material.icons.filled.Refresh
-import androidx.compose.material.icons.filled.DarkMode
-import androidx.compose.material.icons.filled.LightMode
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
@@ -79,7 +77,6 @@ internal val routes = linkedMapOf("overview" to "Home / Overview", "chat" to "Ch
                             DropdownMenu(expanded = appearanceMenuOpen, onDismissRequest = { appearanceMenuOpen = false }) {
                                 DropdownMenuItem(
                                     text = { Text(if (state.darkTheme) "Use light mode" else "Use dark mode") },
-                                    leadingIcon = { Icon(if (state.darkTheme) Icons.Default.LightMode else Icons.Default.DarkMode, null) },
                                     onClick = { vm.setDarkTheme(!state.darkTheme); appearanceMenuOpen = false },
                                 )
                             }
