@@ -1,0 +1,154 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+  <meta name="theme-color" content="#101318">
+  <title>Cognitive Nexus Live</title>
+  <style>
+    :root { color-scheme: dark; font: 15px/1.5 system-ui,-apple-system,Segoe UI,sans-serif; background:#101318; color:#edf0f5; }
+    * { box-sizing: border-box; } body { margin:0; } button,input { font:inherit; } a { color:#9db7ff; }
+    .shell { max-width:1100px; margin:auto; padding:18px 16px 110px; }
+    .top { display:flex; gap:12px; align-items:center; justify-content:space-between; padding:7px 0 20px; }
+    .brand { display:flex; gap:12px; align-items:center; } .logo { display:grid; place-items:center; background:#ff515a; color:#111; border-radius:14px; width:43px; height:43px; font-size:24px; font-weight:900; }
+    h1 { font-size:20px; line-height:1.2; margin:0; } .muted { color:#aab3c4; } .small { font-size:12px; }
+    .badge { font-size:12px; border:1px solid #315740; background:#163525; color:#a7ecc2; padding:7px 10px; border-radius:99px; white-space:nowrap; }
+    .badge.off { border-color:#69454a; background:#3a2429; color:#ffb4b9; }
+    .tabs { display:flex; gap:7px; overflow:auto; padding:2px 0 19px; } .tab { border:1px solid #323a48; color:#c9cfda; background:#1d232e; padding:10px 15px; border-radius:12px; white-space:nowrap; }
+    .tab[aria-selected=true] { background:#ff515a; color:#16171a; border-color:#ff515a; font-weight:700; }
+    .pane[hidden] { display:none; } h2 { margin:0 0 8px; font-size:24px; letter-spacing:-.6px; } h3 { margin:0 0 8px; font-size:16px; }
+    .card { border:1px solid #303847; background:#191f29; border-radius:17px; padding:18px; margin-bottom:12px; }
+    .accent { background:linear-gradient(135deg,#242632,#34222b); border-color:#514047; }
+    .toolbar { display:flex; flex-wrap:wrap; align-items:center; justify-content:space-between; gap:10px; }
+    .btn { border:1px solid #464f5c; background:#28313e; color:#f1f4fa; padding:9px 12px; border-radius:10px; cursor:pointer; }
+    .btn.primary { border-color:#ff515a; background:#ff515a; color:#18171b; font-weight:700; }
+    .stats { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:10px; margin-top:16px; }
+    .stat { border:1px solid #3c414c; background:#111721; border-radius:13px; padding:14px; } .stat strong { display:block; font-size:24px; } .stat span { color:#aeb6c3; font-size:12px; }
+    .filter { width:100%; padding:11px 12px; background:#111721; color:#f3f5f9; border:1px solid #3c4554; border-radius:12px; margin:10px 0; }
+    .file { display:flex; align-items:center; gap:12px; width:100%; margin:5px 0; padding:12px; border:1px solid #303847; background:#202733; color:#eef1f5; border-radius:11px; text-align:left; cursor:pointer; }
+    .file.active { border-color:#ff515a; } .file .name { overflow-wrap:anywhere; flex:1; }
+    .preview { width:100%; min-height:250px; max-height:64vh; overflow:auto; border:1px solid #333e4a; background:#0d1219; border-radius:11px; padding:14px; }
+    pre { white-space:pre-wrap; overflow-wrap:anywhere; font-size:12px; margin:0; font-family:ui-monospace,SFMono-Regular,Consolas,monospace; }
+    .preview img { max-width:100%; height:auto; display:block; margin:auto; }
+    .preview iframe { width:100%; height:55vh; border:0; background:white; }
+    code { font-family:ui-monospace,monospace; } .foot { font-size:12px; color:#8995a8; margin:22px 0; }
+    @media (min-width:750px) { .stats { grid-template-columns:repeat(4,1fr); } .twocol { display:grid; grid-template-columns: minmax(240px, .8fr) minmax(400px, 1.2fr); gap:14px; align-items:start; } }
+  </style>
+</head>
+<body>
+<div class="shell">
+  <header class="top">
+    <div class="brand"><div class="logo" aria-hidden="true">N</div><div><h1>Cognitive Nexus</h1><div class="small muted">GitHub Live Workspace</div></div></div>
+    <span id="connection" class="badge">Connecting…</span>
+  </header>
+  <nav class="tabs" aria-label="Workspace sections">
+    <button class="tab" data-tab="home" aria-selected="true">Overview</button>
+    <button class="tab" data-tab="files" aria-selected="false">File bank</button>
+    <button class="tab" data-tab="preview" aria-selected="false">Preview</button>
+    <button class="tab" data-tab="about" aria-selected="false">About</button>
+  </nav>
+
+  <section class="pane" id="home">
+    <div class="card accent">
+      <div class="small muted">YOUR LIVE WORKSPACE</div>
+      <h2>Change GitHub. See it here.</h2>
+      <p>Files and interface updates publish from your repository. This screen checks for a new published revision automatically while it's open.</p>
+      <div class="toolbar"><button class="btn primary" id="open-files">Open file bank</button><button class="btn" id="refresh-home">Check now</button></div>
+      <div class="stats">
+        <div class="stat"><strong id="file-count">—</strong><span>Published files</span></div>
+        <div class="stat"><strong id="revision">—</strong><span>GitHub revision</span></div>
+        <div class="stat"><strong id="last-check">—</strong><span>Last sync check</span></div>
+        <div class="stat"><strong>Live</strong><span>No separate PC server</span></div>
+      </div>
+    </div>
+    <div class="card"><h3>What this build can do</h3><p class="muted">Browse published files, preview text, code, images, PDFs and sandboxed HTML, and automatically reload when GitHub Pages publishes updates.</p><p class="muted">It does not run Python, Ollama, or an AI model. Use the existing native mode for your previous Mobile API v2 controls.</p></div>
+  </section>
+  <section class="pane" id="files" hidden>
+    <div class="toolbar"><div><h2>GitHub file bank</h2><div class="small muted">Published from <code>live-bank/</code> on main</div></div><button id="refresh-files" class="btn">Refresh</button></div>
+    <input type="search" class="filter" id="filter" placeholder="Search published files…" aria-label="Search published files">
+    <div class="twocol"><div class="card"><div id="files-list" aria-live="polite">Loading files…</div></div><div class="card"><h3>Selected file</h3><div id="file-detail" class="muted">Select a file to preview.</div></div></div>
+  </section>
+  <section class="pane" id="preview" hidden><div class="toolbar"><h2>Preview</h2><a id="raw-link" href="#" target="_blank" rel="noopener" hidden>Open file</a></div><p id="preview-name" class="muted">Choose a file in File bank.</p><div id="preview-content" class="preview" aria-live="polite"><span class="muted">Nothing selected.</span></div></section>
+  <section class="pane" id="about" hidden><div class="card"><h2>How it stays live</h2><p>Your GitHub repository is the source. GitHub Actions publishes the site and allowed bank files to GitHub Pages. The app compares published revisions and reloads the new site automatically.</p><p>Change <code>docs/live/index.html</code> to update this interface. Add or edit files in <code>live-bank/</code> to update the file bank. Only changes on <code>main</code> get published.</p><p>Changes to Android Kotlin code still require rebuilding the APK.</p><p class="small muted" id="status-detail"></p></div></section>
+  <p class="foot">Cognitive Nexus Live · GitHub Pages delivery · Published content is public.</p>
+</div>
+<script>
+(function () {
+  "use strict";
+  var catalog = [], selected = null, currentRevision = null, busyPreview = 0;
+  var el = function (id) { return document.getElementById(id); };
+  function show(tab) {
+    document.querySelectorAll(".tab").forEach(function (node) { node.setAttribute("aria-selected", String(node.dataset.tab === tab)); });
+    document.querySelectorAll(".pane").forEach(function (node) { node.hidden = node.id !== tab; });
+  }
+  document.querySelectorAll(".tab").forEach(function (node) { node.addEventListener("click", function () { show(node.dataset.tab); }); });
+  el("open-files").onclick = function () { show("files"); };
+  function status(ok, message) { el("connection").textContent = message; el("connection").classList.toggle("off", !ok); el("status-detail").textContent = message; }
+  function bust(path) { return path + (path.indexOf("?") === -1 ? "?" : "&") + "_=" + Date.now(); }
+  function getJson(path) { return fetch(bust(path), { cache:"no-store" }).then(function (r) { if (!r.ok) throw new Error("HTTP " + r.status); return r.json(); }); }
+  function size(n) { return n < 1024 ? n + " B" : n < 1048576 ? (n / 1024).toFixed(1) + " KB" : (n / 1048576).toFixed(1) + " MB"; }
+  function renderFiles() {
+    var term = el("filter").value.trim().toLowerCase(), list = el("files-list");
+    list.replaceChildren();
+    var visible = catalog.filter(function (f) { return f.path.toLowerCase().indexOf(term) !== -1; });
+    if (!visible.length) { list.textContent = "No matching published files."; return; }
+    visible.forEach(function (f) {
+      var button = document.createElement("button"); button.className = "file" + (selected && selected.path === f.path ? " active" : "");
+      var icon = document.createElement("span"); icon.textContent = "▤"; icon.setAttribute("aria-hidden","true");
+      var name = document.createElement("span"); name.className = "name"; name.textContent = f.path;
+      var bytes = document.createElement("span"); bytes.className = "muted small"; bytes.textContent = size(f.size);
+      button.append(icon,name,bytes); button.onclick = function () { selectFile(f); }; list.append(button);
+    });
+  }
+  function selectFile(f) {
+    selected = f; renderFiles();
+    el("file-detail").textContent = f.path + " · " + size(f.size);
+    el("preview-name").textContent = f.path; el("raw-link").href = f.url; el("raw-link").hidden = false;
+    show("preview"); previewFile(f);
+  }
+  function previewFile(f) {
+    var marker = ++busyPreview, box = el("preview-content"); box.replaceChildren(); box.textContent = "Loading preview…";
+    var ext = f.path.split(".").pop().toLowerCase();
+    if (["png","jpg","jpeg","webp","gif","svg"].indexOf(ext) !== -1) {
+      var img = document.createElement("img"); img.alt = f.path; img.src = f.url; box.replaceChildren(img); return;
+    }
+    if (ext === "html" || ext === "htm" || ext === "pdf") {
+      var iframe = document.createElement("iframe"); iframe.title = "Preview of " + f.path;
+      iframe.setAttribute("sandbox", "allow-scripts"); iframe.src = f.url; box.replaceChildren(iframe); return;
+    }
+    fetch(f.url, {cache:"no-cache"}).then(function (r) { if (!r.ok) throw new Error("HTTP " + r.status); return r.text(); })
+      .then(function (text) { if (marker !== busyPreview) return; var pre = document.createElement("pre"); pre.textContent = text; box.replaceChildren(pre); })
+      .catch(function (err) { if (marker === busyPreview) box.textContent = "Unable to preview: " + err.message; });
+  }
+  function loadCatalog() {
+    return getJson("catalog.json").then(function (data) {
+      catalog = Array.isArray(data.files) ? data.files : [];
+      el("file-count").textContent = String(catalog.length); renderFiles();
+      status(true, "GitHub connected");
+    }).catch(function (err) { status(false, "Sync unavailable"); el("files-list").textContent = "Could not load published bank: " + err.message; });
+  }
+  function checkRevision() {
+    return getJson("version.json").then(function (v) {
+      var sha = String(v.sha || "");
+      if (!sha) throw new Error("Version missing");
+      el("last-check").textContent = new Date().toLocaleTimeString([], {hour:"2-digit",minute:"2-digit"});
+      el("revision").textContent = sha.slice(0,7);
+      if (currentRevision !== null && currentRevision !== sha) {
+        status(true,"New version found");
+        window.location.replace(window.location.pathname + "?rev=" + encodeURIComponent(sha));
+        return;
+      }
+      currentRevision = sha;
+      status(true,"GitHub connected");
+    }).catch(function () { status(false, "Waiting for GitHub"); });
+  }
+  el("filter").addEventListener("input",renderFiles);
+  el("refresh-home").onclick = function () { checkRevision().then(loadCatalog); };
+  el("refresh-files").onclick = function () { checkRevision().then(loadCatalog); };
+  document.addEventListener("visibilitychange", function () { if (!document.hidden) checkRevision(); });
+  checkRevision().then(loadCatalog);
+  setInterval(function () { if (!document.hidden) checkRevision(); }, 30000);
+})();
+</script>
+</body>
+</html>

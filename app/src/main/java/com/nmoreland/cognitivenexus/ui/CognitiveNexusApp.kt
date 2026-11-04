@@ -35,7 +35,7 @@ internal val routes = linkedMapOf("overview" to "Home / Overview", "chat" to "Ch
     "diagnostics" to "Diagnostics", "settings" to "Settings", "tools" to "Tools / Utilities")
 
 @OptIn(ExperimentalMaterial3Api::class)
-@Composable fun CognitiveNexusApp() {
+@Composable fun CognitiveNexusApp(onOpenLive: (() -> Unit)? = null) {
     val context = LocalContext.current.applicationContext
     val settings = remember { BackendSettingsRepository(context) }
     val vm: NexusViewModel = viewModel(factory = NexusViewModel.factory(settings))
@@ -72,6 +72,7 @@ internal val routes = linkedMapOf("overview" to "Home / Overview", "chat" to "Ch
                 TopAppBar(title = { Text("Cognitive Nexus", fontWeight = FontWeight.Bold) },
                     navigationIcon = { IconButton(onClick = { scope.launch { drawer.open() } }) { Icon(Icons.Default.Menu, "Open navigation") } },
                     actions = {
+                        if (onOpenLive != null) TextButton(onClick = onOpenLive) { Text("Live / Files") }
                         IconButton(onClick = vm::refreshConnection) { Icon(Icons.Default.Refresh, "Check backend") }
                         Box {
                             IconButton(onClick = { appearanceMenuOpen = true }) { Icon(Icons.Default.Menu, "Appearance menu") }

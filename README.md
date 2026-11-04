@@ -122,3 +122,7 @@ what can run. See `ANDROID_PORT_STATUS.md` for what was actually tested, build r
 
 Security design references: [Android Keystore](https://developer.android.com/privacy-and-security/keystore)
 and [FastAPI bearer authentication](https://fastapi.tiangolo.com/tutorial/security/).
+
+## App icon
+
+The launcher icon uses the 🧠 brain emoji from [Noto Emoji](https://github.com/googlefonts/noto-emoji) by Google, licensed under the Apache License 2.0, on a white background (`#FFFFFF`).
