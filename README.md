@@ -125,4 +125,4 @@ and [FastAPI bearer authentication](https://fastapi.tiangolo.com/tutorial/securi
 
 ## App icon
 
-The launcher icon uses the 🧠 brain emoji from [Noto Emoji](https://github.com/googlefonts/noto-emoji) by Google, licensed under the Apache License 2.0, on the app's dark background (`#101318`).
+The launcher icon uses the 🧠 brain emoji from [Noto Emoji](https://github.com/googlefonts/noto-emoji) by Google, licensed under the Apache License 2.0, on a white background (`#FFFFFF`).
