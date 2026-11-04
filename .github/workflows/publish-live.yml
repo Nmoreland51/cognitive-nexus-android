@@ -1,0 +1,76 @@
+name: Publish Cognitive Nexus Live
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'docs/live/**'
+      - 'live-bank/**'
+      - '.github/workflows/publish-live.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: cognitive-nexus-live-pages
+  cancel-in-progress: true
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - uses: actions/checkout@v4
+      - name: Prepare public site and file catalog
+        env:
+          GITHUB_SHA: ${{ github.sha }}
+        run: |
+          python - <<'PY'
+          import json
+          import os
+          import pathlib
+          import shutil
+          import urllib.parse
+
+          root = pathlib.Path("live-bank")
+          public = pathlib.Path("_live_site")
+          shutil.copytree("docs/live", public, dirs_exist_ok=True)
+          destination = public / "bank"
+          destination.mkdir(exist_ok=True)
+
+          allowed = {".md", ".txt", ".json", ".yaml", ".yml", ".toml", ".xml",
+                     ".csv", ".html", ".htm", ".css", ".js", ".py", ".kt",
+                     ".java", ".png", ".jpg", ".jpeg", ".webp", ".gif", ".svg", ".pdf"}
+          files = []
+          if root.exists():
+              for file in sorted(root.rglob("*")):
+                  if not file.is_file() or file.is_symlink():
+                      continue
+                  relative = file.relative_to(root)
+                  if any(part.startswith(".") for part in relative.parts):
+                      continue
+                  if file.suffix.lower() not in allowed or file.stat().st_size > 2_000_000:
+                      continue
+                  target = destination / relative
+                  target.parent.mkdir(parents=True, exist_ok=True)
+                  shutil.copy2(file, target)
+                  path = relative.as_posix()
+                  url = "bank/" + "/".join(urllib.parse.quote(part) for part in relative.parts)
+                  files.append({"path": path, "url": url, "size": file.stat().st_size})
+
+          (public / "catalog.json").write_text(json.dumps({"files": files}, indent=2), encoding="utf-8")
+          (public / "version.json").write_text(json.dumps({"sha": os.environ["GITHUB_SHA"]}), encoding="utf-8")
+          (public / ".nojekyll").touch()
+          print("Publishing", len(files), "files")
+          PY
+      - uses: actions/configure-pages@v5
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: _live_site
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4
