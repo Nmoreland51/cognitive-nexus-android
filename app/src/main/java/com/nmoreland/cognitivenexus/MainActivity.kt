@@ -14,6 +14,7 @@ import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.layout.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
@@ -35,25 +36,26 @@ class MainActivity : ComponentActivity() {
 @Composable
 private fun LiveWorkspace() {
     val context = LocalContext.current
-    var nativeMode by remember { mutableStateOf(false) }
+    // Native (AI over the local backend) is the default screen; Live / Files is opt-in.
+    // rememberSaveable keeps the chosen mode across rotation and process recreation.
+    var nativeMode by rememberSaveable { mutableStateOf(true) }
     var failed by remember { mutableStateOf(false) }
     var webView by remember { mutableStateOf<WebView?>(null) }
     var canGoBack by remember { mutableStateOf(false) }
 
-    BackHandler(enabled = !nativeMode && canGoBack) {
-        webView?.goBack()
+    // In Live mode, Back walks the WebView history first, then returns to Native
+    // instead of closing the app.
+    BackHandler(enabled = !nativeMode) {
+        if (canGoBack) {
+            webView?.goBack()
+        } else {
+            nativeMode = true
+        }
     }
 
     if (nativeMode) {
-        Column(Modifier.fillMaxSize()) {
-            Surface(tonalElevation = 3.dp) {
-                Row(Modifier.fillMaxWidth().padding(8.dp), horizontalArrangement = Arrangement.SpaceBetween) {
-                    Text("Cognitive Nexus · Native", modifier = Modifier.padding(10.dp))
-                    TextButton(onClick = { nativeMode = false }) { Text("Live mode") }
-                }
-            }
-            Box(Modifier.weight(1f)) { CognitiveNexusApp() }
-        }
+        // The native screen's own top bar carries the "Live / Files" button.
+        CognitiveNexusApp(onOpenLive = { nativeMode = false })
     } else {
         MaterialTheme(colorScheme = darkColorScheme()) {
             Scaffold(topBar = {
@@ -124,6 +126,7 @@ private fun LiveWorkspace() {
                         update = { webView = it },
                         onRelease = { view ->
                             webView = null
+                            canGoBack = false
                             view.stopLoading()
                             view.destroy()
                         }

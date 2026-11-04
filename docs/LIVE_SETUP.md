@@ -1,8 +1,10 @@
 # Cognitive Nexus: GitHub Live Mode
 
-The Android APK opens the hosted interface at:
+The Android APK opens to the **Native** Cognitive Nexus screen by default, which talks to your Nexus backend over Wi-Fi. Tap **Live / Files** in the top bar to open the hosted interface and GitHub file bank at:
 
 https://nmoreland51.github.io/cognitive-nexus-android/
+
+Tap **Native** (or press Back) to return to the AI.
 
 ## Enable publishing
 
