@@ -119,6 +119,23 @@ class NexusEngine:
         return None
 
     def execute(self, req, store):
+        """Run one operation. A request the engine's one content rule stops is answered with that rule's own words.
+
+        The engine stops such a request before anything is written, searched or drawn, and says so
+        in a fixed sentence (modules/behavior_policy.py). Research, knowledge and image operations
+        raise it as ContentRuleBlocked; without this the phone showed "Engine operation failed",
+        which sends the owner looking for a fault that is not there. The sentence is the engine's
+        own and contains nothing from the request, so it is safe to show.
+        """
+        try:
+            return self._execute(req, store)
+        except Exception as exc:
+            reply = getattr(exc, "reply", None)
+            if type(exc).__name__ == "ContentRuleBlocked" and isinstance(reply, str) and reply:
+                raise PublicError(reply) from None
+            raise
+
+    def _execute(self, req, store):
         from modules import research
         from modules.context_manager import load_user_profile_summary, remember_user_fact, forget_user_fact
         from modules.image_gen import detect_image_providers, ImageGenerationRequest, IMAGE_STYLE_OPTIONS

@@ -7,7 +7,7 @@ from uuid import uuid4
 
 from fastapi.testclient import TestClient
 
-from backend.engine import StrictRouter, public_url
+from backend.engine import NexusEngine, StrictRouter, public_url
 from backend.server import PublicError, create_app
 from backend.store import Store
 
@@ -115,6 +115,40 @@ class ApiTests(unittest.TestCase):
         router = SimpleNamespace(generate=lambda _: SimpleNamespace(success=False, provider="fallback", text="not real"))
         with self.assertRaises(PublicError):
             StrictRouter(router).generate(None)
+
+    def test_a_request_stopped_by_the_content_rule_shows_the_rules_own_words(self):
+        """The engine raises ContentRuleBlocked for research, knowledge and images; the phone must not call that a failure of the engine."""
+        class ContentRuleBlocked(RuntimeError):
+            def __init__(self):
+                super().__init__("internal detail")
+                self.reply = "Not written. This app has one content rule."
+
+        engine = NexusEngine.__new__(NexusEngine)  # no engine checkout is needed to test the mapping
+
+        def stopped(req, store):
+            raise ContentRuleBlocked()
+
+        engine._execute = stopped
+        with self.assertRaises(PublicError) as raised:
+            engine.execute(None, None)
+        self.assertEqual("Not written. This app has one content rule.", str(raised.exception))
+
+        def broken(req, store):
+            raise RuntimeError("secret=do-not-leak")
+
+        engine._execute = broken
+        with self.assertRaises(RuntimeError):  # anything else stays an internal error, reported without its text
+            engine.execute(None, None)
+
+        class Lookalike(RuntimeError):
+            reply = "attacker-chosen text"
+
+        def lookalike(req, store):
+            raise Lookalike("x")
+
+        engine._execute = lookalike
+        with self.assertRaises(Lookalike):  # only the engine's own exception is shown as written
+            engine.execute(None, None)
 
     def test_private_ingest_url_blocked(self):
         for url in ["file:///etc/passwd", "http://127.0.0.1", "http://10.0.2.2", "http://169.254.169.254", "https://user:pass@example.com"]:
