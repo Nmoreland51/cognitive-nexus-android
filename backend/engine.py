@@ -33,7 +33,8 @@ class StrictRouter:
         yield from chunks
 
 
-def public_url(url):
+def public_addresses(url):
+    """Check a website address and return the public addresses its name resolved to."""
     parsed = urlparse(url)
     if parsed.scheme not in {"http", "https"} or not parsed.hostname or parsed.username or parsed.password:
         raise PublicError("Enter a public http:// or https:// URL without credentials.")
@@ -45,6 +46,11 @@ def public_url(url):
         raise PublicError("The website hostname could not be resolved.") from exc
     if not addresses or any(not ipaddress.ip_address(item[4][0]).is_global for item in addresses):
         raise PublicError("Private, loopback, and link-local URLs cannot be ingested.")
+    return list(dict.fromkeys(item[4][0] for item in addresses))
+
+
+def public_url(url):
+    public_addresses(url)
     return url
 
 
@@ -196,10 +202,18 @@ class NexusEngine:
             # Explicit redirect validation; no requests to private machines on the LAN.
             import requests
             from bs4 import BeautifulSoup
+            # The connection must go to the address that was checked. Looking the name up a second
+            # time to connect would let a hostile name server answer the check with a public address
+            # and the connection with one on this network. The engine pins the checked addresses for
+            # the request (modules/url_safety.py).
+            try:
+                from modules.url_safety import pinned
+            except ImportError as exc:
+                raise PublicError("This server's engine is too old to fetch websites safely. Update the engine checkout.") from exc
             url = req.text
             for _ in range(5):
-                public_url(url)
-                with requests.get(url, timeout=(5, 20), allow_redirects=False, stream=True) as response:
+                checked = public_addresses(url)
+                with pinned(urlparse(url).hostname, checked), requests.get(url, timeout=(5, 20), allow_redirects=False, stream=True) as response:
                     if response.is_redirect:
                         from urllib.parse import urljoin
                         url = urljoin(url, response.headers["Location"])

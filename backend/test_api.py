@@ -7,7 +7,7 @@ from uuid import uuid4
 
 from fastapi.testclient import TestClient
 
-from backend.engine import NexusEngine, StrictRouter, public_url
+from backend.engine import NexusEngine, StrictRouter, public_addresses, public_url
 from backend.server import PublicError, create_app
 from backend.store import Store
 
@@ -149,6 +149,13 @@ class ApiTests(unittest.TestCase):
         engine._execute = lookalike
         with self.assertRaises(Lookalike):  # only the engine's own exception is shown as written
             engine.execute(None, None)
+
+    def test_a_checked_website_address_is_returned_for_pinning(self):
+        # An address written out needs no name server, so this runs offline.
+        self.assertEqual(["93.184.216.34"], public_addresses("https://93.184.216.34/page"))
+        self.assertEqual("https://93.184.216.34/page", public_url("https://93.184.216.34/page"))
+        with self.assertRaises(PublicError):
+            public_addresses("http://192.168.1.10/")
 
     def test_private_ingest_url_blocked(self):
         for url in ["file:///etc/passwd", "http://127.0.0.1", "http://10.0.2.2", "http://169.254.169.254", "https://user:pass@example.com"]:
